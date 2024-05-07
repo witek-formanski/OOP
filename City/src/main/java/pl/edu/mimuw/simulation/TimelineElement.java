@@ -1,12 +1,7 @@
 package pl.edu.mimuw.simulation;
 
 public abstract class TimelineElement {
-    private int time;
+    public abstract int getTime();
 
-    public int getTime() {
-        return time;
-    }
-    public int compareTo(TimelineElement other) {
-        return Integer.compare(this.time, other.getTime());
-    }
+    public abstract int compareTo(TimelineElement other);
 }

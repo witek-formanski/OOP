@@ -2,28 +2,30 @@ package pl.edu.mimuw.simulation;
 
 import java.util.Arrays;
 
-public class MinHeap {
-    private TimelineElement[] heap;
+public class HeapTimeline implements ITimeline {
+    private TimelineElement[] timeline;
     private int size;
     private int capacity;
     private static final int DEFAULT_CAPACITY = 8;
 
-    public MinHeap() {
+    public HeapTimeline() {
         this(DEFAULT_CAPACITY);
     }
-    public MinHeap(int capacity) {
+    public HeapTimeline(int capacity) {
         this.capacity = capacity;
         this.size = 0;
-        heap = new TimelineElement[capacity];
+        timeline = new TimelineElement[capacity];
     }
-    private boolean isEmpty() {
+
+    @Override
+    public boolean isEmpty() {
         return (size == 0);
     }
 
     private void resize() {
         capacity *= 2;
-        TimelineElement[] newHeap = Arrays.copyOf(heap, capacity);
-        heap = newHeap;
+        TimelineElement[] newHeap = Arrays.copyOf(timeline, capacity);
+        timeline = newHeap;
     }
 
     private int getParentIndex(int index) {
@@ -38,10 +40,6 @@ public class MinHeap {
         return 2 * index + 2;
     }
 
-    private boolean hasParent(int index) {
-        return getParentIndex(index) >= 0;
-    }
-
     private boolean hasLeftChild(int index) {
         return getLeftChildIndex(index) < size;
     }
@@ -51,9 +49,9 @@ public class MinHeap {
     }
 
     private void swap(int index1, int index2) {
-        TimelineElement temp = heap[index1];
-        heap[index1] = heap[index2];
-        heap[index2] = temp;
+        TimelineElement temp = timeline[index1];
+        timeline[index1] = timeline[index2];
+        timeline[index2] = temp;
     }
 
     public void insert(int x) {
@@ -64,24 +62,23 @@ public class MinHeap {
         if (size == capacity) {
             resize();
         }
-        heap[size] = value;
+        timeline[size] = value;
         size++;
         heapifyUp();
     }
 
     public TimelineElement peek() {
-        if (isEmpty()) {
-            throw new IllegalStateException("Heap is empty");
-        }
-        return heap[0];
+        assert(!isEmpty());
+
+        return timeline[0];
     }
 
+    @Override
     public TimelineElement extractMin() {
-        if (isEmpty()) {
-            throw new IllegalStateException("Heap is empty");
-        }
-        TimelineElement min = heap[0];
-        heap[0] = heap[size - 1];
+        assert(!isEmpty());
+
+        TimelineElement min = timeline[0];
+        timeline[0] = timeline[size - 1];
         size--;
         heapifyDown();
         return min;
@@ -89,7 +86,7 @@ public class MinHeap {
 
     private void heapifyUp() {
         int index = size - 1;
-        while (hasParent(index) && heap[index].compareTo(heap[getParentIndex(index)]) == -1) {
+        while (timeline[index].compareTo(timeline[getParentIndex(index)]) == -1) {
             swap(index, getParentIndex(index));
             index = getParentIndex(index);
         }
@@ -99,10 +96,10 @@ public class MinHeap {
         int index = 0;
         while (hasLeftChild(index)) {
             int smallerChildIndex = getLeftChildIndex(index);
-            if (hasRightChild(index) && heap[getRightChildIndex(index)].compareTo(heap[smallerChildIndex]) == -1) {
+            if (hasRightChild(index) && timeline[getRightChildIndex(index)].compareTo(timeline[smallerChildIndex]) == -1) {
                 smallerChildIndex = getRightChildIndex(index);
             }
-            if (heap[index].compareTo(heap[smallerChildIndex]) == -1) {
+            if (timeline[index].compareTo(timeline[smallerChildIndex]) == -1) {
                 break;
             } else {
                 swap(index, smallerChildIndex);
@@ -113,7 +110,7 @@ public class MinHeap {
 
     public void printHeap() {
         for (int i = 0; i < size; i++) {
-            System.out.print(heap[i] + " ");
+            System.out.print(timeline[i] + " ");
         }
         System.out.println();
     }
