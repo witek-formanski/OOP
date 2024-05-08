@@ -53,7 +53,7 @@ public class MinHeapTest {
         Arrays.sort(array);
 
         for (int i = 0; i < array.length; i++) {
-            int extractedMin = minHeap.extractMin().getTime();
+            int extractedMin = minHeap.extractMin().getTime().toInt();
             assertEquals(array[i], extractedMin);
         }
     }

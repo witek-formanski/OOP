@@ -1,24 +1,28 @@
 package pl.edu.mimuw.timeline;
 
+import pl.edu.mimuw.utils.Time;
+
 public class Event extends TimelineElement {
-    private int time;
+    private Time time;
     private int id;
     private static int globalId = 0;
-    private Object object;
+    private IEventObject object;
+    private String description;
 
     public Event(int time) {
-        this(time, null);
+        this(new Time(0, time), null, null);
     }
 
-    public Event(int time, Object object) {
+    public Event(Time time, IEventObject object, String description) {
         this.time = time;
         this.object = object;
+        this.description = description;
         id = globalId;
         globalId++;
     }
 
     @Override
-    public int getTime() {
+    public Time getTime() {
         return time;
     }
 
@@ -26,14 +30,14 @@ public class Event extends TimelineElement {
 
     @Override
     public int compareTo(TimelineElement other) {
-        if (time == other.getTime()) {
+        if (time.toInt() == other.getTime().toInt()) {
             return (id < other.getId()) ? -1 : 1;
         }
-        return (time < other.getTime()) ? -1 : 1;
+        return (time.toInt() < other.getTime().toInt()) ? -1 : 1;
     }
 
     @Override
     public String toString() {
-        return object.toString();
+        return time.toString() + description;
     }
 }

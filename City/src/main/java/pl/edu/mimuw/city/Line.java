@@ -15,11 +15,11 @@ public class Line {
         route = new Route(routeLength);
     }
 
-    public void addStop(int index, String stopName) {
-        route.addStop(index, stopName);
+    public void addStop(int index, IStop stop) {
+        route.addStop(index, stop);
     }
-    public void addStop(int index, String stopName, int travelTime) {
-        route.addStop(index, stopName);
+    public void addStop(int index, IStop stop, int travelTime) {
+        route.addStop(index, stop);
         route.addTravelTime(index, travelTime);
     }
 
