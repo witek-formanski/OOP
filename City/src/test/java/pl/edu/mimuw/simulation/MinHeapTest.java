@@ -1,6 +1,7 @@
 package pl.edu.mimuw.simulation;
 
 import org.junit.jupiter.api.Test;
+import pl.edu.mimuw.timeline.HeapTimeline;
 
 import java.util.Arrays;
 import java.util.Random;

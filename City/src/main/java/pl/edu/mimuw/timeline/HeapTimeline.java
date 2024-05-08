@@ -1,4 +1,4 @@
-package pl.edu.mimuw.simulation;
+package pl.edu.mimuw.timeline;
 
 import java.util.Arrays;
 

@@ -1,5 +1,7 @@
 package pl.edu.mimuw.simulation;
 
+import pl.edu.mimuw.timeline.Event;
+
 public class Main {
     public static void main(String[] args) {
 
@@ -13,5 +15,8 @@ public class Main {
         System.out.println(less.compareTo(more));
         System.out.println(less.compareTo(less));
         System.out.println(more.compareTo(less));
+
+        Simulation simulation = new Simulation();
+        simulation.run();
     }
 }
