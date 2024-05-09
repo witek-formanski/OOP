@@ -54,15 +54,15 @@ public class HeapTimeline implements ITimeline {
         timeline[index2] = temp;
     }
 
-    public void insert(int x) {
-        insert(new Event(x));
-    }
+//    public void insert(int x) {
+//        insert(new Event(x));
+//    }
 
-    public void insert(TimelineElement value) {
+    public void insert(TimelineElement element) {
         if (size == capacity) {
             resize();
         }
-        timeline[size] = value;
+        timeline[size] = element;
         size++;
         heapifyUp();
     }

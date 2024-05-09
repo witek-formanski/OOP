@@ -9,14 +9,20 @@ public class Time {
         this.minutesTotal = minutesTotal;
     }
 
-    public String toString() {
-        int hour = minutesTotal / 60;
-        int minutes = minutesTotal - hour * 60;
+    public Time(Time time, int incrementedMinutes) {
+        this(time.toInt() + incrementedMinutes);
+    }
 
-        return day + ", " + hour + ":" + minutes;
+    public String toString() {
+        return day + ", " + minutesTotal / 60 + ":" + minutesTotal % 60;
     }
 
     public int toInt() {
         return day * 24 * 60 + minutesTotal;
     }
+
+    public Time(int timeInt) {
+        this(timeInt / (24 * 60), timeInt % (24 * 60));
+    }
+
 }

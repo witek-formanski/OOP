@@ -2,16 +2,12 @@ package pl.edu.mimuw.timeline;
 
 import pl.edu.mimuw.utils.Time;
 
-public class Event extends TimelineElement {
+public abstract class Event extends TimelineElement {
     private Time time;
     private int id;
     private static int globalId = 0;
     private IEventObject object;
     private String description;
-
-    public Event(int time) {
-        this(new Time(0, time), null, null);
-    }
 
     public Event(Time time, IEventObject object, String description) {
         this.time = time;
@@ -19,6 +15,10 @@ public class Event extends TimelineElement {
         this.description = description;
         id = globalId;
         globalId++;
+    }
+
+    protected IEventObject getObject() {
+        return object;
     }
 
     @Override

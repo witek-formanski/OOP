@@ -6,4 +6,5 @@ public abstract class TimelineElement {
     public abstract Time getTime();
     public abstract int getId();
     public abstract int compareTo(TimelineElement other);
+    public abstract void act();
 }
