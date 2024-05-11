@@ -32,6 +32,7 @@ public class Line {
         for (int i = 0; i < (trams.length + 1) / 2; i++) {
             trams[i].setDirectionForwards(true);
             trams[i].arriveAtStop(new Time(morningTime, i * tramFrequency), 0);
+            //ToDo: What if there are so many trains, that some of them arrive at first stop after 23?
         }
         for (int i = (trams.length + 1) / 2; i < trams.length; i++) {
             trams[i].setDirectionForwards(false);

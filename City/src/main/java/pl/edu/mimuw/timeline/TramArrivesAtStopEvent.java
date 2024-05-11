@@ -8,11 +8,13 @@ public class TramArrivesAtStopEvent extends Event {
 
     public TramArrivesAtStopEvent(Time time, Tram object) {
         super(time, object,"Tram of line number " + object.getLine().getNumber() + " (side number: " + object.getSideNumber() + ") arrived at stop "
-                + object.getLine().getRoute().getStopOfNumber(object.getCurrentStop()).getName() + ".");
+                + object.getLine().getRoute().getStopOfIndex(object.getCurrentStopIndex()).getName() + ".");
     }
 
     @Override
     public void act() {
-
+        object.leavePassengers();
+        object.takePassengers();
+        object.goToNextStop();
     }
 }

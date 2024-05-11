@@ -25,4 +25,19 @@ public class Stop implements IStop {
         passengers[passengersCount] = passenger;
         passengersCount++;
     }
+
+    @Override
+    public int getAvailablePlacesCount() {
+        return passengers.length - passengersCount;
+    }
+
+    @Override
+    public Passenger removePassenger() {
+        return passengers[passengersCount--];
+    }
+
+    @Override
+    public int getPassengersCount() {
+        return passengersCount;
+    }
 }

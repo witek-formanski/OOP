@@ -39,7 +39,7 @@ public class Route {
         return stops.length;
     }
 
-    public IStop getStopOfNumber(int stopNumber) {
-        return stops[stopNumber];
+    public IStop getStopOfIndex(int stopIndex) {
+        return stops[stopIndex];
     }
 }
