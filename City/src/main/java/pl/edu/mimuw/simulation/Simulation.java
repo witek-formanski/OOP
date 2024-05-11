@@ -1,7 +1,7 @@
 package pl.edu.mimuw.simulation;
 
 import pl.edu.mimuw.city.IStop;
-import pl.edu.mimuw.city.Line;
+import pl.edu.mimuw.city.TramLine;
 import pl.edu.mimuw.city.Passenger;
 import pl.edu.mimuw.city.Stop;
 import pl.edu.mimuw.timeline.Event;
@@ -17,7 +17,7 @@ public class Simulation {
     private final int daysCount;
     private final IStop[] stops;
     private final Passenger[] passengers;
-    private final Line[] lines;
+    private final TramLine[] tramLines;
     private final static Scanner scanner = new Scanner(System.in);
 
     public Simulation() {
@@ -36,24 +36,24 @@ public class Simulation {
         }
         tramCapacity = scanner.nextInt();
         linesCount = scanner.nextInt();
-        lines = new Line[linesCount];
+        tramLines = new TramLine[linesCount];
         int numberOfTrams, routeLength, lastSideNumber = 0;
         for (int i = 0; i < linesCount; i++) {
             numberOfTrams = scanner.nextInt();
             routeLength = scanner.nextInt();
-            lines[i] = new Line(i, numberOfTrams, routeLength, lastSideNumber, tramCapacity);
+            tramLines[i] = new TramLine(i, numberOfTrams, routeLength, lastSideNumber, tramCapacity);
             lastSideNumber += numberOfTrams;
             String stopName;
             for (int j = 0; j < routeLength - 1; j++) {
                 stopName = scanner.next();
-                lines[i].getRoute().addStop(j, getStop(stopName));
-                lines[i].getRoute().addTravelTime(j, scanner.nextInt());
+                tramLines[i].getRoute().addStop(j, getStop(stopName));
+                tramLines[i].getRoute().addTravelTime(j, scanner.nextInt());
             }
             stopName = scanner.next();
-            lines[i].getRoute().addStop(routeLength - 1, getStop(stopName));
-            lines[i].getRoute().setDepotTime(scanner.nextInt());
-            lines[i].getRoute().setTotalTravelTime();
-            lines[i].setTramFrequency();
+            tramLines[i].getRoute().addStop(routeLength - 1, getStop(stopName));
+            tramLines[i].getRoute().setDepotTime(scanner.nextInt());
+            tramLines[i].getRoute().setTotalTravelTime();
+            tramLines[i].setTramFrequency();
         }
     }
 
@@ -67,8 +67,8 @@ public class Simulation {
         for (Passenger passenger : passengers) {
             passenger.startDay(day);
         }
-        for (Line line : lines) {
-            line.startDay(day);
+        for (TramLine tramLine : tramLines) {
+            tramLine.startDay(day);
         }
 
         TimelineElement event;
@@ -84,7 +84,7 @@ public class Simulation {
     }
 
     private Stop getStop(String stopName) {
-        // ToDo
+        // ToDo: implement dictionary??
         return new Stop(stopName, 0);
     }
 }

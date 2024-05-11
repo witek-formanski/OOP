@@ -1,8 +1,8 @@
 package pl.edu.mimuw.city;
 
 public class Route {
-    private IStop[] stops;
-    private int[] travelTimes;
+    private final IStop[] stops;
+    private final int[] travelTimes;
     private int depotTime;
     private int totalTravelTime;
 
@@ -13,8 +13,8 @@ public class Route {
 
     public void setTotalTravelTime() {
         totalTravelTime = 0;
-        for (int i = 0; i < travelTimes.length; i++) {
-            totalTravelTime += travelTimes[i];
+        for (int travelTime : travelTimes) {
+            totalTravelTime += travelTime;
         }
         totalTravelTime += depotTime;
         totalTravelTime *= 2;
@@ -46,5 +46,9 @@ public class Route {
 
     public IStop getStopOfIndex(int stopIndex) {
         return stops[stopIndex];
+    }
+
+    public int getTravelTime(int stopIndex) {
+        return travelTimes[stopIndex]; //ToDo: verify, if it's correct
     }
 }
