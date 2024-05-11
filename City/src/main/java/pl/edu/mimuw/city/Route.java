@@ -35,6 +35,11 @@ public class Route {
     public void setDepotTime(int depotTime) {
         this.depotTime = depotTime;
     }
+
+    public int getDepotTime() {
+        return depotTime;
+    }
+
     public int getStopsCount() {
         return stops.length;
     }

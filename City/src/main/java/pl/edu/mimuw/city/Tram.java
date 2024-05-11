@@ -90,11 +90,12 @@ public class Tram extends Vehicle implements IEventObject {
         }
     }
 
-    private boolean isCurrentStopDepot() {
+    public boolean isCurrentStopDepot() {
         return (currentStopIndex == 0 || currentStopIndex == getLine().getRoute().getStopsCount() - 1);
     }
 
     private void waitInDepot() {
+        getLine().getRoute().getDepotTime();
 
     }
 }

@@ -31,7 +31,7 @@ public class Line {
         Time morningTime = new Time(day, 60 * 6);
         for (int i = 0; i < (trams.length + 1) / 2; i++) {
             trams[i].setDirectionForwards(true);
-            trams[i].arriveAtStop(new Time(morningTime, i * tramFrequency), 0);
+            trams[i].arriveAtStop(new Time(morningTime, i * tramFrequency), 0); //ToDo: StartFromDepotEvent
             //ToDo: What if there are so many trains, that some of them arrive at first stop after 23?
         }
         for (int i = (trams.length + 1) / 2; i < trams.length; i++) {
