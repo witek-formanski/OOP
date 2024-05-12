@@ -1,7 +1,6 @@
 package pl.edu.mimuw.events;
 
 import pl.edu.mimuw.city.Passenger;
-import pl.edu.mimuw.city.Tram;
 import pl.edu.mimuw.utils.Time;
 
 public class PassengerLeavesTramEvent extends Event {

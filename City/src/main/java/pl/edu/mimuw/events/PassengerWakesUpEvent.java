@@ -17,6 +17,7 @@ public class PassengerWakesUpEvent extends Event {
     @Override
     public void act() {
         ((Passenger) getObject()).setWaitingTimeToday(0);
+        ((Passenger) getObject()).setRidesCountToday(0);
 
         if (((Passenger) getObject()).getStop().isFull()) {
             Logger.log(getTime(), "Passenger " + ((Passenger) getObject()).getId() + " didn't travel on this day, because his stop (" + ((Passenger) getObject()).getStop().getName() + ") was full.");

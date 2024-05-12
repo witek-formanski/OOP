@@ -29,4 +29,8 @@ public class Time {
         return minutesTotal > 23 * 60;
     }
 
+    public String toStringInHours() {
+        return day * 24 + minutesTotal / 60 + ":" + ((minutesTotal % 60 < 10) ? "0" + minutesTotal % 60 : minutesTotal % 60);
+    }
+
 }

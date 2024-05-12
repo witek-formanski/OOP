@@ -24,11 +24,13 @@ public class Simulation {
     private final static Scanner scanner = new Scanner(System.in);
     private final int[] ridesCounts;
     private final int[] waitingTimes;
+    private final int[] waitingPassengersCount;
 
     public Simulation() {
         daysCount = scanner.nextInt();
         ridesCounts = new int[daysCount];
         waitingTimes = new int[daysCount];
+        waitingPassengersCount = new int[daysCount];
         final int stopCapacity, stopsCount, passengersCount, tramCapacity, linesCount;
         stopCapacity = scanner.nextInt();
         stopsCount = scanner.nextInt();
@@ -99,15 +101,24 @@ public class Simulation {
     }
 
     private void printSummary() {
-        int totalRidesCount = 0, totalWaitingTime = 0;
-        for (int ridesCount : ridesCounts) {
-            totalRidesCount += ridesCount;
+        Logger.log("STATS");
+        Logger.newLine();
+        int totalRidesCount = 0, totalWaitingTime = 0, totalWaitingPassengers = 0;
+        Time waitingTime;
+        for (int i = 0;  i < daysCount; i++ ) {
+            Logger.log("DAY " + (i+1) + ":");
+            waitingTime = new Time(waitingTimes[i]);
+            Logger.log("Total rides count: " + ridesCounts[i] + ".");
+            Logger.log("Total waiting time (hours:minutes): " + waitingTime.toStringInHours() + ".");
+            totalRidesCount += ridesCounts[i];
+            totalWaitingTime += waitingTimes[i];
+            totalWaitingPassengers += waitingPassengersCount[i];
+            Logger.newLine();
         }
-        for (int waitingTime : waitingTimes) {
-            totalWaitingTime += waitingTime;
-        }
+        Time averageWaitingTime = new Time(totalWaitingTime / totalWaitingPassengers);
+        Logger.log("SUMMARY");
         Logger.log("Total rides count: " + totalRidesCount + ".");
-        Logger.log("Total waiting time: " + totalWaitingTime + ".");
+        Logger.log("Average waiting time (hours:minutes): " + averageWaitingTime.toStringInHours() + ".");
     }
 
     private void simulateDay(int day) {
@@ -134,17 +145,16 @@ public class Simulation {
 
         ridesCounts[day - 1] = 0;
         waitingTimes[day - 1] = 0;
-        int passengersWaitingTodayCount = 0;
+        waitingPassengersCount[day - 1] = 0;
         for (Passenger passenger : passengers) {
-            ridesCounts[day - 1] += passenger.getRidesCount();
+            ridesCounts[day - 1] += passenger.getRidesCountToday();
             passenger.endTrackingWaitingTime(new Time(day, 23 * 60));
             if (passenger.hasTraveledToday()) {
-                passengersWaitingTodayCount++;
+                waitingPassengersCount[day - 1]++;
                 waitingTimes[day - 1] += passenger.getWaitingTimeToday();
             }
         }
-        Logger.log("Total rides count: " + ridesCounts[day - 1] + ".");
-        Logger.log("Average waiting time: " + waitingTimes[day - 1] / passengersWaitingTodayCount + ".");
+
 
         Logger.newLine();
     }
@@ -154,14 +164,26 @@ public class Simulation {
     }
 
     private IStop getStop(String stopName) {
-        // ToDo: use dictionary when allowed
-        // ToDo: binsearch
-        for (IStop stop : stops) {
-            if (stop.getName().equals(stopName)) {
-                return stop;
+        int low = 0;
+        int high = stops.length - 1;
+
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+            IStop midStop = stops[mid];
+            String midStopName = midStop.getName();
+
+            int comparison = midStopName.compareTo(stopName);
+
+            if (comparison < 0) {
+                low = mid + 1;
+            } else if (comparison > 0) {
+                high = mid - 1;
+            } else {
+                return midStop;
             }
         }
 
         throw new IllegalArgumentException("Invalid stop name provided.");
     }
+
 }

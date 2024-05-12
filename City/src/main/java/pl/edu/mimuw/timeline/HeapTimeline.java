@@ -54,10 +54,6 @@ public class HeapTimeline implements ITimeline {
         timeline[index2] = temp;
     }
 
-//    public void insert(int x) {
-//        insert(new Event(x));
-//    }
-
     public void insert(TimelineElement element) {
         if (size == capacity) {
             resize();
@@ -106,13 +102,6 @@ public class HeapTimeline implements ITimeline {
             }
             index = smallerChildIndex;
         }
-    }
-
-    public void printHeap() {
-        for (int i = 0; i < size; i++) {
-            System.out.print(timeline[i] + " ");
-        }
-        System.out.println();
     }
 
     public void clear() {

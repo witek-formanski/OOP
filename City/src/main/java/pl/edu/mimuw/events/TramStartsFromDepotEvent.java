@@ -19,7 +19,6 @@ public class TramStartsFromDepotEvent extends Event {
 
         ((Tram) getObject()).turnBack();
         ((Tram) getObject()).takePassengers(getTime());
-        ((Tram) getObject()).leavePassengers(getTime());
         ((Tram) getObject()).goToNextStop(getTime());
     }
 }

@@ -12,13 +12,11 @@ import static java.lang.Math.min;
 
 public class Tram extends Vehicle implements IEventObject {
     private final int sideNumber;
-//    private final int capacity;
     private final TramLine tramLine;
     private boolean directionForwards;
     private int currentStopIndex;
     private final Passenger[] passengers;
     private int passengersCount;
-//    private boolean inDepot;
 
     public int getPassengersCount() {
         return passengersCount;
@@ -26,11 +24,9 @@ public class Tram extends Vehicle implements IEventObject {
 
     public Tram(int sideNumber, int capacity, TramLine tramLine) {
         this.sideNumber = sideNumber;
-//        this.capacity = capacity;
         this.tramLine = tramLine;
         passengers = new Passenger[capacity];
         passengersCount = 0;
-//        inDepot = true;
     }
 
     public void setDirectionForwards(boolean directionForwards) {
@@ -44,11 +40,6 @@ public class Tram extends Vehicle implements IEventObject {
     public boolean getDirectionForwards() {
         return directionForwards;
     }
-
-//    public void arriveAtStop(Time time, int stopNumber) {
-//        currentStopIndex = stopNumber;
-//        Simulation.insertEvent(new TramArrivesAtStopEvent(time, this));
-//    }
 
     public TramLine getLine() {
         return tramLine;
@@ -101,7 +92,7 @@ public class Tram extends Vehicle implements IEventObject {
 
         int shift = directionForwards ? 1 : -1;
         currentStopIndex += shift;
-        Simulation.insertEvent(new TramArrivesAtStopEvent(new Time(time, getLine().getRoute().getTravelTime(currentStopIndex, currentStopIndex - shift)), this));
+        Simulation.insertEvent(new TramArrivesAtStopEvent(new Time(time, tramLine.getRoute().getTravelTime(currentStopIndex, currentStopIndex - shift)), this));
     }
 
     public boolean isCurrentStopFirstDepot() {
@@ -109,7 +100,7 @@ public class Tram extends Vehicle implements IEventObject {
     }
 
     public boolean isCurrentStopSecondDepot() {
-        return currentStopIndex == getLine().getRoute().getStopsCount() - 1;
+        return currentStopIndex == tramLine.getRoute().getStopsCount() - 1;
     }
 
     public void startFromDepot(boolean first, Time time) {
@@ -118,7 +109,7 @@ public class Tram extends Vehicle implements IEventObject {
             setCurrentStopIndex(0);
         } else {
             setDirectionForwards(true);
-            setCurrentStopIndex(getLine().getRoute().getStopsCount() - 1);
+            setCurrentStopIndex(tramLine.getRoute().getStopsCount() - 1);
         }
 
         Simulation.insertEvent(new TramStartsFromDepotEvent(time, this));
@@ -138,5 +129,16 @@ public class Tram extends Vehicle implements IEventObject {
 
     public void turnBack() {
         directionForwards = !directionForwards;
+    }
+
+    public int getNextStopIndex() {
+        if (isCurrentStopFirstDepot()) {
+            return 1;
+        }
+        if (isCurrentStopSecondDepot()) {
+            return tramLine.getRoute().getStopsCount() - 2;
+        }
+
+        return (directionForwards) ? currentStopIndex + 1 : currentStopIndex - 1;
     }
 }

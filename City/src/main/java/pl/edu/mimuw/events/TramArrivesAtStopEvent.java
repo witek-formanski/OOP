@@ -20,7 +20,6 @@ public class TramArrivesAtStopEvent extends Event {
         }
 
         ((Tram) getObject()).takePassengers(getTime());
-        ((Tram) getObject()).leavePassengers(getTime());
         ((Tram) getObject()).goToNextStop(getTime());
     }
 }
