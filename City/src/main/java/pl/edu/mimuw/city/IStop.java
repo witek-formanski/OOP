@@ -7,4 +7,5 @@ public interface IStop {
     int getAvailablePlacesCount();
     Passenger removePassenger();
     int getPassengersCount();
+    void clearAllPassengers();
 }

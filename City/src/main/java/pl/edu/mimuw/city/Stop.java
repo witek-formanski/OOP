@@ -41,4 +41,13 @@ public class Stop implements IStop {
     public int getPassengersCount() {
         return passengersCount;
     }
+
+    @Override
+    public void clearAllPassengers() {
+        for (int i = 0; i < passengersCount; i++) {
+            passengers[i] = null;
+        }
+
+        passengersCount = 0;
+    }
 }

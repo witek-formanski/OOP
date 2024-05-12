@@ -40,6 +40,8 @@ public class Passenger implements IEventObject {
     public void enterTram(Time time, Tram tram) {
         currentTram = tram;
         Simulation.insertEvent(new PassengerEntersTramEvent(time, this, tram));
+
+        chooseStop(time, tram);
     }
 
     public void chooseStop(Time time, Tram tram) {

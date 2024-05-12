@@ -11,7 +11,5 @@ public class TramDepartsFromStopEvent extends Event {
     }
 
     @Override
-    public void act() {
-//        ((Tram) getObject()).goToNextStop(getTime());
-    }
+    public void act() {}
 }

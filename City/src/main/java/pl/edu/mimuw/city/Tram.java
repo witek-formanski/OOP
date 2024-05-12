@@ -72,6 +72,7 @@ public class Tram extends Vehicle implements IEventObject {
             if (passengers[i].getChosenStopIndex() == currentStopIndex) {
                 passengers[i].leaveTram(time);
                 passengers[i] = passengers[passengersCount - 1];
+                passengers[passengersCount - 1] = null;
                 passengersCount--;
             }
             i--;
@@ -96,10 +97,10 @@ public class Tram extends Vehicle implements IEventObject {
     }
 
     public void goToNextStop(Time time) {
+        Simulation.insertEvent(new TramDepartsFromStopEvent(time, this));
+
         int shift = directionForwards ? 1 : -1;
         currentStopIndex += shift;
-
-        Simulation.insertEvent(new TramDepartsFromStopEvent(time, this));
         Simulation.insertEvent(new TramArrivesAtStopEvent(new Time(time, getLine().getRoute().getTravelTime(currentStopIndex, currentStopIndex - shift)), this));
     }
 
@@ -127,8 +128,12 @@ public class Tram extends Vehicle implements IEventObject {
         Simulation.insertEvent(new TramEndsRideEvent(time, this));
     }
 
-    public void leaveAllPassengers(Time time) {
-        //ToDo
+    public void clearAllPassengers() {
+        for (int i = 0; i < passengersCount; i++) {
+            passengers[i] = null;
+        }
+
+        passengersCount = 0;
     }
 
     public void turnBack() {

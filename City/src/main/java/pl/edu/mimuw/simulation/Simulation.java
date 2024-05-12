@@ -108,6 +108,8 @@ public class Simulation {
             Logger.log(event.toString());
             event.act();
         }
+        timeline.clear();
+        for (IStop stop : stops) stop.clearAllPassengers();
 
         Logger.newLine();
     }

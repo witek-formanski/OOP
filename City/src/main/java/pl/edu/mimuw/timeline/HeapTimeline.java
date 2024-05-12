@@ -114,4 +114,8 @@ public class HeapTimeline implements ITimeline {
         }
         System.out.println();
     }
+
+    public void clear() {
+        size = 0;
+    }
 }

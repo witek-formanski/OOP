@@ -12,6 +12,6 @@ public class TramEndsRideEvent extends Event {
 
     @Override
     public void act() {
-        ((Tram) getObject()).leaveAllPassengers(getTime());
+        ((Tram) getObject()).clearAllPassengers();
     }
 }
