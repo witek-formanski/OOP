@@ -2,7 +2,7 @@ package pl.edu.mimuw.simulation;
 
 import org.junit.jupiter.api.Test;
 import pl.edu.mimuw.timeline.HeapTimeline;
-import pl.edu.mimuw.timeline.PassengerWakesUpEvent;
+import pl.edu.mimuw.events.PassengerWakesUpEvent;
 
 import java.util.Arrays;
 import java.util.Random;

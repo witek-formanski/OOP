@@ -14,7 +14,7 @@ public class Time {
     }
 
     public String toString() {
-        return day + ", " + minutesTotal / 60 + ":" + minutesTotal % 60;
+        return day + ", " + minutesTotal / 60 + ":" + ((minutesTotal % 60 < 10) ? "0" + minutesTotal % 60 : minutesTotal % 60);
     }
 
     public int toInt() {
@@ -23,6 +23,10 @@ public class Time {
 
     public Time(int timeInt) {
         this(timeInt / (24 * 60), timeInt % (24 * 60));
+    }
+
+    public boolean isAfter23() {
+        return minutesTotal > 23 * 60;
     }
 
 }

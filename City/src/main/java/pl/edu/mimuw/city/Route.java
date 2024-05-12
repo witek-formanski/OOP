@@ -1,5 +1,7 @@
 package pl.edu.mimuw.city;
 
+import static java.lang.Math.min;
+
 public class Route {
     private final IStop[] stops;
     private final int[] travelTimes;
@@ -48,7 +50,7 @@ public class Route {
         return stops[stopIndex];
     }
 
-    public int getTravelTime(int stopIndex) {
-        return travelTimes[stopIndex]; //ToDo: verify, if it's correct
+    public int getTravelTime(int from, int to) {
+        return travelTimes[min(from, to)];
     }
 }

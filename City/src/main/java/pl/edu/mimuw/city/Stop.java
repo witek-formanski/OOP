@@ -33,7 +33,8 @@ public class Stop implements IStop {
 
     @Override
     public Passenger removePassenger() {
-        return passengers[passengersCount--];
+        passengersCount--;
+        return passengers[passengersCount];
     }
 
     @Override

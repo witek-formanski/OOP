@@ -1,8 +1,11 @@
 package pl.edu.mimuw.city;
 
+import pl.edu.mimuw.events.TramDepartsFromStopEvent;
 import pl.edu.mimuw.simulation.Simulation;
 import pl.edu.mimuw.timeline.IEventObject;
-import pl.edu.mimuw.timeline.TramArrivesAtStopEvent;
+import pl.edu.mimuw.events.TramArrivesAtStopEvent;
+import pl.edu.mimuw.events.TramEndsRideEvent;
+import pl.edu.mimuw.events.TramStartsFromDepotEvent;
 import pl.edu.mimuw.utils.Time;
 
 import static java.lang.Math.min;
@@ -16,6 +19,10 @@ public class Tram extends Vehicle implements IEventObject {
     private final Passenger[] passengers;
     private int passengersCount;
 //    private boolean inDepot;
+
+    public int getPassengersCount() {
+        return passengersCount;
+    }
 
     public Tram(int sideNumber, int capacity, TramLine tramLine) {
         this.sideNumber = sideNumber;
@@ -34,9 +41,9 @@ public class Tram extends Vehicle implements IEventObject {
         currentStopIndex = stopIndex;
     }
 
-//    public boolean getDirectionForwards() {
-//        return directionForwards;
-//    }
+    public boolean getDirectionForwards() {
+        return directionForwards;
+    }
 
 //    public void arriveAtStop(Time time, int stopNumber) {
 //        currentStopIndex = stopNumber;
@@ -59,28 +66,28 @@ public class Tram extends Vehicle implements IEventObject {
         return tramLine.getRoute().getStopOfIndex(currentStopIndex);
     }
 
-    public void leavePassengers() {
-        int passengersToLeaveCount = min(getCurrentStop().getAvailablePlacesCount(), passengersCount);
-        for (int i = 0; i < passengersToLeaveCount; i++) {
-            leavePassenger();
+    public void leavePassengers(Time time) {
+        int i = passengersCount - 1;
+        while (getCurrentStop().getAvailablePlacesCount() > 0 && i >= 0) {
+            if (passengers[i].getChosenStopIndex() == currentStopIndex) {
+                passengers[i].leaveTram(time);
+                passengers[i] = passengers[passengersCount - 1];
+                passengersCount--;
+            }
+            i--;
         }
     }
 
-    public void takePassengers() {
+    public void takePassengers(Time time) {
         int passengersToTakeCount = min(getAvailablePlacesCount(), getCurrentStop().getPassengersCount());
         for (int i = 0; i < passengersToTakeCount; i++) {
-            takePassenger();
+            takePassenger(time);
         }
     }
 
-    private void leavePassenger() {
-        getCurrentStop().addPassenger(passengers[passengersCount - 1]);
-        passengers[passengersCount - 1] = null;
-        passengersCount--;
-    }
-
-    private void takePassenger() {
+    private void takePassenger(Time time) {
         passengers[passengersCount] = getCurrentStop().removePassenger();
+        passengers[passengersCount].enterTram(time, this);
         passengersCount++;
     }
 
@@ -89,23 +96,42 @@ public class Tram extends Vehicle implements IEventObject {
     }
 
     public void goToNextStop(Time time) {
-//        if (isCurrentStopDepot()) {
-//            waitInDepot();
-//        }
-        Simulation.insertEvent(new TramArrivesAtStopEvent(new Time(time, getLine().getRoute().getTravelTime(currentStopIndex)), this));
+        int shift = directionForwards ? 1 : -1;
+        currentStopIndex += shift;
 
-        if (directionForwards) {
-            currentStopIndex++;
+        Simulation.insertEvent(new TramDepartsFromStopEvent(time, this));
+        Simulation.insertEvent(new TramArrivesAtStopEvent(new Time(time, getLine().getRoute().getTravelTime(currentStopIndex, currentStopIndex - shift)), this));
+    }
+
+    public boolean isCurrentStopFirstDepot() {
+        return currentStopIndex == 0;
+    }
+
+    public boolean isCurrentStopSecondDepot() {
+        return currentStopIndex == getLine().getRoute().getStopsCount() - 1;
+    }
+
+    public void startFromDepot(boolean first, Time time) {
+        if (first) {
+            setDirectionForwards(false);
+            setCurrentStopIndex(0);
         } else {
-            currentStopIndex--;
+            setDirectionForwards(true);
+            setCurrentStopIndex(getLine().getRoute().getStopsCount() - 1);
         }
+
+        Simulation.insertEvent(new TramStartsFromDepotEvent(time, this));
     }
 
-    public boolean isCurrentStopDepot() {
-        return (currentStopIndex == 0 || currentStopIndex == getLine().getRoute().getStopsCount() - 1);
+    public void endRide(Time time) {
+        Simulation.insertEvent(new TramEndsRideEvent(time, this));
     }
 
-//    private void waitInDepot() {
-//        getLine().getRoute().getDepotTime();
-//    }
+    public void leaveAllPassengers(Time time) {
+        //ToDo
+    }
+
+    public void turnBack() {
+        directionForwards = !directionForwards;
+    }
 }

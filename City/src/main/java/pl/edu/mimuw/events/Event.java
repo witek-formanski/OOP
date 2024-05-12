@@ -1,5 +1,7 @@
-package pl.edu.mimuw.timeline;
+package pl.edu.mimuw.events;
 
+import pl.edu.mimuw.timeline.IEventObject;
+import pl.edu.mimuw.timeline.TimelineElement;
 import pl.edu.mimuw.utils.Time;
 
 public abstract class Event extends TimelineElement {
@@ -38,6 +40,6 @@ public abstract class Event extends TimelineElement {
 
     @Override
     public String toString() {
-        return time.toString() + description;
+        return time.toString() + ": " + description;
     }
 }
