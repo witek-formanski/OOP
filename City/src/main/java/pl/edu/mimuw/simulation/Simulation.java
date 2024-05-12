@@ -10,6 +10,7 @@ import pl.edu.mimuw.timeline.HeapTimeline;
 import pl.edu.mimuw.timeline.ITimeline;
 import pl.edu.mimuw.timeline.TimelineElement;
 import pl.edu.mimuw.utils.Logger;
+import pl.edu.mimuw.utils.Time;
 
 import java.util.Arrays;
 import java.util.Scanner;
@@ -21,9 +22,13 @@ public class Simulation {
     private final Passenger[] passengers;
     private final TramLine[] tramLines;
     private final static Scanner scanner = new Scanner(System.in);
+    private final int[] ridesCounts;
+    private final int[] waitingTimes;
 
     public Simulation() {
         daysCount = scanner.nextInt();
+        ridesCounts = new int[daysCount];
+        waitingTimes = new int[daysCount];
         final int stopCapacity, stopsCount, passengersCount, tramCapacity, linesCount;
         stopCapacity = scanner.nextInt();
         stopsCount = scanner.nextInt();
@@ -90,6 +95,19 @@ public class Simulation {
         for (int day = 1; day <= daysCount; day++) {
             simulateDay(day);
         }
+        printSummary();
+    }
+
+    private void printSummary() {
+        int totalRidesCount = 0, totalWaitingTime = 0;
+        for (int ridesCount : ridesCounts) {
+            totalRidesCount += ridesCount;
+        }
+        for (int waitingTime : waitingTimes) {
+            totalWaitingTime += waitingTime;
+        }
+        Logger.log("Total rides count: " + totalRidesCount + ".");
+        Logger.log("Total waiting time: " + totalWaitingTime + ".");
     }
 
     private void simulateDay(int day) {
@@ -108,8 +126,25 @@ public class Simulation {
             Logger.log(event.toString());
             event.act();
         }
+
         timeline.clear();
-        for (IStop stop : stops) stop.clearAllPassengers();
+        for (IStop stop : stops) {
+            stop.clearAllPassengers();
+        }
+
+        ridesCounts[day - 1] = 0;
+        waitingTimes[day - 1] = 0;
+        int passengersWaitingTodayCount = 0;
+        for (Passenger passenger : passengers) {
+            ridesCounts[day - 1] += passenger.getRidesCount();
+            passenger.endTrackingWaitingTime(new Time(day, 23 * 60));
+            if (passenger.hasTraveledToday()) {
+                passengersWaitingTodayCount++;
+                waitingTimes[day - 1] += passenger.getWaitingTimeToday();
+            }
+        }
+        Logger.log("Total rides count: " + ridesCounts[day - 1] + ".");
+        Logger.log("Average waiting time: " + waitingTimes[day - 1] / passengersWaitingTodayCount + ".");
 
         Logger.newLine();
     }
@@ -120,6 +155,7 @@ public class Simulation {
 
     private IStop getStop(String stopName) {
         // ToDo: use dictionary when allowed
+        // ToDo: binsearch
         for (IStop stop : stops) {
             if (stop.getName().equals(stopName)) {
                 return stop;

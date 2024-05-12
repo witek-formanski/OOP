@@ -16,12 +16,17 @@ public class PassengerWakesUpEvent extends Event {
 
     @Override
     public void act() {
+        ((Passenger) getObject()).setWaitingTimeToday(0);
+
         if (((Passenger) getObject()).getStop().isFull()) {
             Logger.log(getTime(), "Passenger " + ((Passenger) getObject()).getId() + " didn't travel on this day, because his stop (" + ((Passenger) getObject()).getStop().getName() + ") was full.");
+            ((Passenger) getObject()).setTraveledToday(false);
             return;
         }
 
         Logger.log(getTime(), "Passenger " + ((Passenger) getObject()).getId() + " went to his stop (" + ((Passenger) getObject()).getStop().getName() + ") and started waiting for a tram.");
+        ((Passenger) getObject()).setTraveledToday(true);
         ((Passenger) getObject()).getStop().addPassenger(((Passenger) getObject()));
+        ((Passenger) getObject()).startTrackingWaitingTime(getTime());
     }
 }

@@ -16,5 +16,7 @@ public class PassengerEntersTramEvent extends Event {
     @Override
     public void act() {
         ((Passenger) getObject()).setCurrentTram(this.tram);
+        ((Passenger) getObject()).incrementRidesCount();
+        ((Passenger) getObject()).endTrackingWaitingTime(getTime());
     }
 }

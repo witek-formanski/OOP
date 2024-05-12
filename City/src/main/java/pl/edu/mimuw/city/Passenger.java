@@ -14,11 +14,18 @@ public class Passenger implements IEventObject {
     private final int id;
     private Tram currentTram;
     private int chosenStopIndex;
+    private int ridesCount;
+    private boolean traveledToday;
+    private int waitingTimeToday;
+    private Time arrivalAtStop;
 
     public Passenger(IStop stop, int id) {
         this.stop = stop;
         this.id = id;
         currentTram = null;
+        ridesCount = 0;
+        waitingTimeToday = 0;
+        arrivalAtStop = null;
     }
 
     public IStop getStop() {
@@ -58,7 +65,21 @@ public class Passenger implements IEventObject {
 
     public void leaveTram(Time time) {
         currentTram.getLine().getRoute().getStopOfIndex(currentTram.getCurrentStopIndex()).addPassenger(this);
+        startTrackingWaitingTime(time);
         Simulation.insertEvent(new PassengerLeavesTramEvent(time, this));
+    }
+
+    public void startTrackingWaitingTime(Time time) {
+        arrivalAtStop = time;
+    }
+
+    public void endTrackingWaitingTime(Time time) {
+        if (arrivalAtStop == null) {
+            return;
+        }
+
+        waitingTimeToday += time.toInt() - arrivalAtStop.toInt();
+        arrivalAtStop = null;
     }
 
     public Tram getCurrentTram() {
@@ -67,5 +88,29 @@ public class Passenger implements IEventObject {
 
     public void setCurrentTram(Tram currentTram) {
         this.currentTram = currentTram;
+    }
+
+    public int getRidesCount() {
+        return ridesCount;
+    }
+
+    public void incrementRidesCount() {
+        ridesCount++;
+    }
+
+    public void setTraveledToday(boolean traveledToday) {
+        this.traveledToday = traveledToday;
+    }
+
+    public boolean hasTraveledToday() {
+        return traveledToday;
+    }
+
+    public int getWaitingTimeToday() {
+        return waitingTimeToday;
+    }
+
+    public void setWaitingTimeToday(int waitingTimeToday) {
+        this.waitingTimeToday = waitingTimeToday;
     }
 }
