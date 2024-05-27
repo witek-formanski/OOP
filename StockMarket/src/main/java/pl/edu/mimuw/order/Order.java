@@ -1,7 +1,6 @@
 package pl.edu.mimuw.order;
 
 public abstract class Order {
-    private OrderType type;
     private String identificator;
     private int sharesCount;
     private int priceLimit;
@@ -14,7 +13,5 @@ public abstract class Order {
         orderNumber = ordersCount;
     }
 
-    public int compareTo(Order other) {
-
-    }
+    public abstract int compareTo(Order other);
 }
