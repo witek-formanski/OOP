@@ -1,5 +1,7 @@
 package pl.edu.mimuw.order.purchase;
 
-public class BinaryPurchase extends Purchase {
+import pl.edu.mimuw.order.BinaryOrder;
+
+public class BinaryPurchase extends Purchase implements BinaryOrder {
 
 }
