@@ -14,4 +14,12 @@ public abstract class Order {
     }
 
     public abstract int compareTo(Order other);
+
+    public int getPriceLimit() {
+        return priceLimit;
+    }
+
+    public int getOrderNumber() {
+        return orderNumber;
+    }
 }
