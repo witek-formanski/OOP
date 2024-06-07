@@ -2,10 +2,10 @@ package pl.edu.mimuw.company;
 
 public class Share {
     private String name;
-    private int price;
+    private Company company;
 
     public Share(String name, int price) {
         this.name = name;
-        this.price = price;
+        company = new Company(price);
     }
 }

@@ -4,6 +4,7 @@ import pl.edu.mimuw.company.Share;
 import pl.edu.mimuw.investor.Investor;
 import pl.edu.mimuw.investor.RandomInvestor;
 import pl.edu.mimuw.investor.SimpleMovingAverageInvestor;
+import pl.edu.mimuw.system.TradingSystem;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -14,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 public class IOHandler {
-    public static List<Investor> readFromFile(String fileName) {
+    public static List<Investor> readFromFile(String fileName, TradingSystem system) {
         List<Investor> Investors = new ArrayList<>();
         Map<String, Share> shares = new HashMap<>();
         int randomInvestorsCount = 0;
@@ -53,6 +54,7 @@ public class IOHandler {
                         int price = Integer.parseInt(parts[1]);
                         shares.put(name, new Share(name, price));
                     }
+                    system.setShares(shares);
                 }
 
                 // Third line - Initial cash and shares for each investor
@@ -72,6 +74,9 @@ public class IOHandler {
                         String name = parts[0];
                         int quantity = Integer.parseInt(parts[1]);
                         Share share = shares.get(name);
+                        if (share == null) {
+                            throw new IllegalArgumentException("The share of name " + name + " was not found in shares list.");
+                        }
                         for (Investor investor : Investors) {
                             investor.addShare(share, quantity);
                         }

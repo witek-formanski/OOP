@@ -1,7 +1,7 @@
 package pl.edu.mimuw.order;
 
 public abstract class Order {
-    private String identificator;
+    private String identificator; //ToDo
     private int sharesCount;
     private int priceLimit;
     private static int ordersCount = 0;

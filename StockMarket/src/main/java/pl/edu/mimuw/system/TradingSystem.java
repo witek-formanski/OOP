@@ -1,23 +1,34 @@
 package pl.edu.mimuw.system;
 
+import pl.edu.mimuw.company.Share;
 import pl.edu.mimuw.investor.Investor;
 import pl.edu.mimuw.utils.IOHandler;
 
 import java.util.List;
+import java.util.Map;
 
 import static java.util.Collections.shuffle;
 
 public class TradingSystem {
-    private static int currentRound;
+    private Map<String, Share> shares;
+
+    public int getRoundsCount() {
+        return roundsCount;
+    }
+    private int currentRound;
     private final int roundsCount;
-    private List<Investor> investors;
+    private final List<Investor> investors;
 
     public TradingSystem(String fileName, int roundsCount) {
         this.roundsCount = roundsCount;
-        readInput(fileName);
+        investors = readInput(fileName);
     }
 
-    public static int getCurrentRound() {
+    public int getSharesCount() {
+        return shares.size();
+    }
+
+    public int getCurrentRound() {
         return currentRound;
     }
 
@@ -35,16 +46,19 @@ public class TradingSystem {
     private void askInvestors() {
         shuffle(investors);
         for (Investor investor : investors) {
-            //...
+            investor.playRound(this);
         }
-
     }
 
     private void realizeTransactions() {
 
     }
 
-    private void readInput(String fileName) {
-        investors = IOHandler.readFromFile(fileName);
+    private List<Investor> readInput(String fileName) {
+        return IOHandler.readFromFile(fileName, this);
+    }
+
+    public void setShares(Map<String, Share> shares) {
+        this.shares = shares;
     }
 }
