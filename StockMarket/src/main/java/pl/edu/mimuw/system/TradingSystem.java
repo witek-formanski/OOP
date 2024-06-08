@@ -53,7 +53,9 @@ public class TradingSystem {
     }
 
     private void realizeTransactions() {
-
+        for (Company company : getAvailableCompaniesList()) {
+            company.realizeTransactions();
+        }
     }
 
     private List<Investor> readInput(String fileName) {
