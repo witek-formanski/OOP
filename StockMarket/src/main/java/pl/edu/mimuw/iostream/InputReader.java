@@ -1,6 +1,6 @@
-package pl.edu.mimuw.utils;
+package pl.edu.mimuw.iostream;
 
-import pl.edu.mimuw.company.Share;
+import pl.edu.mimuw.company.Company;
 import pl.edu.mimuw.investor.Investor;
 import pl.edu.mimuw.investor.RandomInvestor;
 import pl.edu.mimuw.investor.SimpleMovingAverageInvestor;
@@ -14,13 +14,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class IOHandler {
+public class InputReader {
     public static List<Investor> readFromFile(String fileName, TradingSystem system) {
         List<Investor> Investors = new ArrayList<>();
-        Map<String, Share> shares = new HashMap<>();
+        Map<String, Company> companies = new HashMap<>();
         int randomInvestorsCount = 0;
         int simpleMovingAverageInvestorsCount = 0;
-        int cash;
+        int money;
         String[] tokens;
 
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
@@ -52,39 +52,38 @@ public class IOHandler {
                         String[] parts = token.split(":");
                         String name = parts[0];
                         int price = Integer.parseInt(parts[1]);
-                        shares.put(name, new Share(name, price));
+                        companies.put(name, new Company(name, price));
                     }
-                    system.setShares(shares);
+                    system.setCompanies(companies);
                 }
 
                 // Third line - Initial cash and shares for each investor
                 else if (line.matches("^\\d+( \\w+:\\d+)*$")) {
                     tokens = line.split(" ");
-                    cash = Integer.parseInt(tokens[0]);
+                    money = Integer.parseInt(tokens[0]);
 
                     for (int i = 0; i < randomInvestorsCount; i++) {
-                        Investors.add(new RandomInvestor(cash));
+                        Investors.add(new RandomInvestor(money));
                     }
                     for (int i = 0; i < simpleMovingAverageInvestorsCount; i++) {
-                        Investors.add(new SimpleMovingAverageInvestor(cash));
+                        Investors.add(new SimpleMovingAverageInvestor(money));
                     }
 
                     for (int i = 1; i < tokens.length; i++) {
                         String[] parts = tokens[i].split(":");
                         String name = parts[0];
                         int quantity = Integer.parseInt(parts[1]);
-                        Share share = shares.get(name);
-                        if (share == null) {
+                        if (companies.get(name) == null) {
                             throw new IllegalArgumentException("The share of name " + name + " was not found in shares list.");
                         }
                         for (Investor investor : Investors) {
-                            investor.addShare(share, quantity);
+                            investor.addShare(name, quantity);
                         }
                     }
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new IllegalArgumentException("Invalid input data provided.");
         }
 
         return Investors;

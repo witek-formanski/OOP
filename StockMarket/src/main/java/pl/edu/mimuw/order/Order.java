@@ -1,16 +1,17 @@
 package pl.edu.mimuw.order;
 
 public abstract class Order {
-    private String identificator; //ToDo
-    private int sharesCount;
-    private int priceLimit;
+    protected final String shareName;
+    protected final int sharesCount;
+    protected final int priceLimit;
     private static int ordersCount = 0;
-    private int orderNumber;
-    private int round;
+    protected final int orderNumber;
 
-    public Order() {
-        ordersCount++;
-        orderNumber = ordersCount;
+    public Order(String shareName, int sharesCount, int priceLimit) {
+        this.shareName = shareName;
+        this.sharesCount = sharesCount;
+        this.priceLimit = priceLimit;
+        orderNumber = ++ordersCount;
     }
 
     public abstract int compareTo(Order other);
@@ -21,5 +22,9 @@ public abstract class Order {
 
     public int getOrderNumber() {
         return orderNumber;
+    }
+
+    public String getShareName() {
+        return shareName;
     }
 }

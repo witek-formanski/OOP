@@ -1,8 +1,9 @@
 package pl.edu.mimuw.system;
 
-import pl.edu.mimuw.company.Share;
+import pl.edu.mimuw.company.Company;
 import pl.edu.mimuw.investor.Investor;
-import pl.edu.mimuw.utils.IOHandler;
+import pl.edu.mimuw.order.Order;
+import pl.edu.mimuw.iostream.InputReader;
 
 import java.util.List;
 import java.util.Map;
@@ -10,11 +11,7 @@ import java.util.Map;
 import static java.util.Collections.shuffle;
 
 public class TradingSystem {
-    private Map<String, Share> shares;
-
-    public int getRoundsCount() {
-        return roundsCount;
-    }
+    private Map<String, Company> companies;
     private int currentRound;
     private final int roundsCount;
     private final List<Investor> investors;
@@ -24,8 +21,8 @@ public class TradingSystem {
         investors = readInput(fileName);
     }
 
-    public int getSharesCount() {
-        return shares.size();
+    public int getCompaniesCount() {
+        return companies.size();
     }
 
     public int getCurrentRound() {
@@ -55,10 +52,39 @@ public class TradingSystem {
     }
 
     private List<Investor> readInput(String fileName) {
-        return IOHandler.readFromFile(fileName, this);
+        return InputReader.readFromFile(fileName, this);
     }
 
-    public void setShares(Map<String, Share> shares) {
-        this.shares = shares;
+    public void submitOrder(Order order) {
+        Company company = getCompany(order.getShareName());
+        company.addOrder(order);
+    }
+
+    public List<String> getAvailableCompaniesList() {
+        return companies.keySet().stream().toList();
+    }
+
+    public int getLastPriceOfShare(String companyName) {
+        Company company = getCompany(companyName);
+        return company.getLastPriceOfShare();
+    }
+
+    public Company getCompany(String companyName) {
+        Company company = companies.get(companyName);
+        if (company == null) {
+            throw new IllegalArgumentException("Unknown company name " + companyName + ".");
+        }
+        return company;
+    }
+
+    public void setCompanies(Map<String, Company> companies) {
+        this.companies = companies;
+    }
+
+    public Company getCompanyOfIndex(int index) {
+        if (index >= getCompaniesCount()) {
+            throw new ArrayIndexOutOfBoundsException("Tried to access company at index " + index + ", but the companies count is " + getCompaniesCount() + ".");
+        }
+        return companies.get(getAvailableCompaniesList().get(index));
     }
 }
