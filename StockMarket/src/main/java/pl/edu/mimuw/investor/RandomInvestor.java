@@ -31,8 +31,9 @@ public class RandomInvestor extends Investor {
         int index = RandomNumberGenerator.getRandom(0, system.getCompaniesCount() - 1);
         Company company = system.getCompanyOfIndex(index);
 
-        int range = RandomNumberGenerator.getRandom(0, 10);
-        int pricePerShare = company.getLastPriceOfShare() + RandomNumberGenerator.getRandom(-range, range);;
+        int range = RandomNumberGenerator.getRandom(0, system.getMaximalPriceChange());
+        int pricePerShare = company.getLastPriceOfShare() + RandomNumberGenerator.getRandom(-range, range);
+        ;
         int sharesCount = RandomNumberGenerator.getRandom(0, money / pricePerShare);
         if (sharesCount == 0) {
             return;
@@ -60,8 +61,8 @@ public class RandomInvestor extends Investor {
         String shareName = getShareOfIndex(index);
         Company company = system.getCompany(shareName);
 
-        int range = RandomNumberGenerator.getRandom(0, 10);
-        int pricePerShare = company.getLastPriceOfShare() + RandomNumberGenerator.getRandom(-range, range);;
+        int range = RandomNumberGenerator.getRandom(0, system.getMaximalPriceChange());
+        int pricePerShare = company.getLastPriceOfShare() + RandomNumberGenerator.getRandom(-range, range);
         int sharesCount = RandomNumberGenerator.getRandom(0, shares.get(shareName));
         if (sharesCount == 0) {
             return;

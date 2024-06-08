@@ -15,10 +15,15 @@ public class TradingSystem {
     private int currentRound;
     private final int roundsCount;
     private final List<Investor> investors;
+    private final int maximalPriceChange = 10;
 
     public TradingSystem(String fileName, int roundsCount) {
         this.roundsCount = roundsCount;
         investors = readInput(fileName);
+    }
+
+    public int getMaximalPriceChange() {
+        return maximalPriceChange;
     }
 
     public int getCompaniesCount() {
@@ -60,8 +65,12 @@ public class TradingSystem {
         company.addOrder(order);
     }
 
-    public List<String> getAvailableCompaniesList() {
+    public List<String> getAvailableCompaniesNamesList() {
         return companies.keySet().stream().toList();
+    }
+
+    public List<Company> getAvailableCompaniesList() {
+        return companies.values().stream().toList();
     }
 
     public int getLastPriceOfShare(String companyName) {
@@ -85,6 +94,6 @@ public class TradingSystem {
         if (index >= getCompaniesCount()) {
             throw new ArrayIndexOutOfBoundsException("Tried to access company at index " + index + ", but the companies count is " + getCompaniesCount() + ".");
         }
-        return companies.get(getAvailableCompaniesList().get(index));
+        return companies.get(getAvailableCompaniesNamesList().get(index));
     }
 }
