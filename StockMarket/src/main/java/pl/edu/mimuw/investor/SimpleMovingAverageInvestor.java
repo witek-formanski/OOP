@@ -1,7 +1,6 @@
 package pl.edu.mimuw.investor;
 
 import pl.edu.mimuw.company.Company;
-import pl.edu.mimuw.order.purchase.Purchase;
 import pl.edu.mimuw.system.TradingSystem;
 import pl.edu.mimuw.utils.SimpleMovingAverageAnalyst;
 
@@ -29,11 +28,11 @@ public class SimpleMovingAverageInvestor extends Investor {
         for (Company company : companies) {
             String companyName = company.getName();
             if (smaAnalyst.shouldBuy(companyName)) {
-                system.submitOrder(smaAnalyst.createPurchase(companyName, money));
+                system.submitOrder(smaAnalyst.createPurchase(companyName, money, system.getMaximalPriceChange()));
                 return;
             }
             if (smaAnalyst.shouldSell(companyName) && shares.containsKey(companyName)) {
-                system.submitOrder(smaAnalyst.createSale(companyName, shares.get(companyName)));
+                system.submitOrder(smaAnalyst.createSale(companyName, shares.get(companyName), system.getMaximalPriceChange()));
                 return;
             }
         }

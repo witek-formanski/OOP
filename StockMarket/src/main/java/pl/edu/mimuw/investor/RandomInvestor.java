@@ -44,7 +44,7 @@ public class RandomInvestor extends Investor {
         int purchaseType = RandomNumberGenerator.getRandom(0, 3);
         purchase = switch (purchaseType) {
             case 0 -> new BinaryPurchase(shareName, sharesCount, pricePerShare);
-            case 1 -> new DefinitePurchase(shareName, sharesCount, pricePerShare);
+            case 1 -> new DefinitePurchase(shareName, sharesCount, pricePerShare, RandomNumberGenerator.getRandom(1, 7));
             case 2 -> new ImmediatePurchase(shareName, sharesCount, pricePerShare);
             case 3 -> new IndefinitePurchase(shareName, sharesCount, pricePerShare);
             default -> throw new IllegalArgumentException("Exceeded available purchase types count.");
@@ -72,7 +72,7 @@ public class RandomInvestor extends Investor {
         int saleType = RandomNumberGenerator.getRandom(0, 3);
         sale = switch (saleType) {
             case 0 -> new BinarySale(shareName, sharesCount, pricePerShare);
-            case 1 -> new DefiniteSale(shareName, sharesCount, pricePerShare);
+            case 1 -> new DefiniteSale(shareName, sharesCount, pricePerShare, RandomNumberGenerator.getRandom(1, 7));
             case 2 -> new ImmediateSale(shareName, sharesCount, pricePerShare);
             case 3 -> new IndefiniteSale(shareName, sharesCount, pricePerShare);
             default -> throw new IllegalArgumentException("Exceeded available sale types count.");

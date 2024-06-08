@@ -40,7 +40,8 @@ public class SimpleMovingAverageAnalyst {
             throw new IllegalStateException("Invalid price list for share: " + shareName + ".");
         }
 
-        //ToDo: shouldBuy, shouldSell
+        double previousLow = companyData.lowAverage;
+        double previousHigh = companyData.highAverage;
 
         double sum = 0;
         for (int i = smaLowLength; i < smaHighLength; i++) {
@@ -52,6 +53,22 @@ public class SimpleMovingAverageAnalyst {
             sum += companyData.prices.get(i);
         }
         companyData.highAverage = sum / smaHighLength;
+
+        decide(companyData, previousLow, previousHigh);
+    }
+
+    private void decide(CompanyData companyData, double previousLow, double previousHigh) {
+        companyData.clearDecisions();
+
+        if (previousLow >= previousHigh && companyData.lowAverage < companyData.highAverage) {
+            companyData.shouldSell = true;
+            companyData.decisionCoefficient = 1 - companyData.lowAverage / companyData.highAverage;
+            companyData.normalizeDecisionCoefficient();
+        } else if (previousLow <= previousHigh && companyData.lowAverage > companyData.highAverage) {
+            companyData.shouldBuy = true;
+            companyData.decisionCoefficient = companyData.lowAverage / companyData.highAverage - 1;
+            companyData.normalizeDecisionCoefficient();
+        }
     }
 
     private CompanyData getCompanyData(String companyName) {
@@ -69,20 +86,52 @@ public class SimpleMovingAverageAnalyst {
         return getCompanyData(companyName).shouldSell;
     }
 
-    public Purchase createPurchase(String companyName, int money) {
+    public Purchase createPurchase(String companyName, int money, int maximalPriceChange) {
         if (!shouldBuy(companyName)) {
             throw new IllegalStateException("Cannot create a purchase for shares that shouldn't been bought.");
         }
 
-        //ToDo
+        CompanyData companyData = getCompanyData(companyName);
+        double coefficient = companyData.decisionCoefficient;
+        int pricePerShare = companyData.prices.getLast() + (int) ((coefficient - 0.5) * maximalPriceChange);
+        int sharesCount = Math.min(money / pricePerShare, (int) (10 * coefficient));
+
+        Purchase purchase;
+        if (coefficient < 0.25) {
+            purchase = new BinaryPurchase(companyName, sharesCount, pricePerShare);
+        } else if (coefficient < 0.5) {
+            purchase = new ImmediatePurchase(companyName, sharesCount, pricePerShare);
+        } else if (coefficient < 0.75) {
+            purchase = new DefinitePurchase(companyName, sharesCount, pricePerShare, (int) (6 * coefficient));
+        } else {
+            purchase = new IndefinitePurchase(companyName, sharesCount, pricePerShare);
+        }
+
+        return purchase;
     }
 
-    public Sale createSale(String companyName, int sharesCount) {
+    public Sale createSale(String companyName, int availableSharesCount, int maximalPriceChange) {
         if (!shouldSell(companyName)) {
             throw new IllegalStateException("Cannot create a sale for shares that shouldn't been sold.");
         }
 
-        //ToDo
+        CompanyData companyData = getCompanyData(companyName);
+        double coefficient = companyData.decisionCoefficient;
+        int pricePerShare = companyData.prices.getLast() - (int) ((coefficient - 0.5) * maximalPriceChange);
+        int sharesCount = Math.min(availableSharesCount, (int) (10 * coefficient));
+
+        Sale sale;
+        if (coefficient < 0.25) {
+            sale = new BinarySale(companyName, sharesCount, pricePerShare);
+        } else if (coefficient < 0.5) {
+            sale = new ImmediateSale(companyName, sharesCount, pricePerShare);
+        } else if (coefficient < 0.75) {
+            sale = new DefiniteSale(companyName, sharesCount, pricePerShare, (int) (6 * coefficient));
+        } else {
+            sale = new IndefiniteSale(companyName, sharesCount, pricePerShare);
+        }
+
+        return sale;
     }
 
     private class CompanyData {
@@ -91,13 +140,25 @@ public class SimpleMovingAverageAnalyst {
         private double highAverage;
         private boolean shouldBuy;
         private boolean shouldSell;
+        // The decisionCoefficient should be between 0 and 1.
+        // The bigger the coefficient, the stronger the decision should be.
+        private double decisionCoefficient;
 
         private CompanyData() {
             prices = new ArrayList<>();
             lowAverage = 0;
             highAverage = 0;
+            clearDecisions();
+        }
+
+        private void clearDecisions() {
             shouldBuy = false;
             shouldSell = false;
+        }
+
+        private void normalizeDecisionCoefficient() {
+            decisionCoefficient = Math.min(1, decisionCoefficient);
+            decisionCoefficient = Math.max(0, decisionCoefficient);
         }
     }
 }
