@@ -1,8 +1,9 @@
 package pl.edu.mimuw.order;
 
 import pl.edu.mimuw.investor.Investor;
+import pl.edu.mimuw.iostream.Logger;
 
-public abstract class Order {
+public abstract class Order implements Comparable<Order> {
     protected final String shareName;
     protected int sharesCount;
     protected final int priceLimit;
@@ -16,9 +17,8 @@ public abstract class Order {
         this.priceLimit = priceLimit;
         this.investor = investor;
         orderNumber = ++ordersCount;
+        Logger.log("Created " + this);
     }
-
-    public abstract int compareTo(Order other);
 
     public int getPriceLimit() {
         return priceLimit;
@@ -34,5 +34,10 @@ public abstract class Order {
 
     public int getSharesCount() {
         return sharesCount;
+    }
+
+    @Override
+    public String toString() {
+        return this.getClass().getName() + ": " + sharesCount + " shares of " + shareName + ", " + priceLimit + " for each. The order number is: " + orderNumber + ".";
     }
 }

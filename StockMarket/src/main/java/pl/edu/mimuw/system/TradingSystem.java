@@ -2,6 +2,7 @@ package pl.edu.mimuw.system;
 
 import pl.edu.mimuw.company.Company;
 import pl.edu.mimuw.investor.Investor;
+import pl.edu.mimuw.iostream.Logger;
 import pl.edu.mimuw.order.Order;
 import pl.edu.mimuw.iostream.InputReader;
 
@@ -35,19 +36,26 @@ public class TradingSystem {
     }
 
     public void simulateStockMarket() {
+        Logger.log("Simulation has begun.");
         for (currentRound = 0; currentRound < roundsCount; currentRound++) {
             simulateRound();
         }
+        Logger.log("Simulation has ended.");
+        Logger.log();
         printSummary();
     }
 
     private void printSummary() {
         // ToDo
+        Logger.log("Summary:");
     }
 
     private void simulateRound() {
+        Logger.log("Round number " + currentRound + " has begun.");
         askInvestors();
         realizeTransactions();
+        Logger.log("Round number " + currentRound + " has ended.");
+        Logger.log();
     }
 
     private void askInvestors() {
@@ -78,11 +86,6 @@ public class TradingSystem {
 
     public List<Company> getAvailableCompaniesList() {
         return companies.values().stream().toList();
-    }
-
-    public int getLastPriceOfShare(String companyName) {
-        Company company = getCompany(companyName);
-        return company.getLastPriceOfShare();
     }
 
     public Company getCompany(String companyName) {

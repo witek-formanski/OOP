@@ -1,6 +1,7 @@
 package pl.edu.mimuw.utils;
 
 import pl.edu.mimuw.investor.Investor;
+import pl.edu.mimuw.iostream.Logger;
 import pl.edu.mimuw.order.purchase.*;
 import pl.edu.mimuw.order.sale.*;
 
@@ -108,6 +109,7 @@ public class SimpleMovingAverageAnalyst {
             purchase = new IndefinitePurchase(companyName, sharesCount, pricePerShare, investor);
         }
 
+        Logger.log("A SimpleMovingAverageAnalyst decided to create " + purchase);
         return purchase;
     }
 

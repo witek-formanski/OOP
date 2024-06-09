@@ -8,6 +8,8 @@ import pl.edu.mimuw.order.Order;
 import pl.edu.mimuw.order.purchase.Purchase;
 import pl.edu.mimuw.order.sale.Sale;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
@@ -49,6 +51,7 @@ public class Company {
     public void realizeTransactions() {
         while (!purchases.isEmpty() && !sales.isEmpty()) {
             if (purchases.peek().getPriceLimit() < sales.peek().getPriceLimit()) {
+                Logger.log(""); //ToDo: logging
                 return;
             }
             tryCreateTransaction();
@@ -66,21 +69,16 @@ public class Company {
                 || order instanceof ImmediateOrder
                 || (order instanceof DefiniteOrder && !((DefiniteOrder) order).decrement())
         );
-
-//        Iterator<? extends Order> iterator = orders.iterator();
-//        while (iterator.hasNext()) {
-//            Order order = iterator.next();
-//            if (order instanceof BinaryOrder || order instanceof ImmediateOrder) {
-//                iterator.remove();
-//            } else if (order instanceof DefiniteOrder && !((DefiniteOrder) order).decrement()) {
-//                iterator.remove();
-//            }
-//        }
     }
 
-    private void tryCreateTransaction() {
+    private void tryCreateTransaction() { //ToDo: binary orders
         Purchase purchase = purchases.peek();
         Sale sale = sales.peek();
+
+        if (purchase instanceof BinaryOrder || sale instanceof BinaryOrder) {
+            tryCreateBinaryTransaction();
+            return;
+        }
 
         int sharesCount = Math.min(purchase.getSharesCount(), sale.getSharesCount());
         int price = discussPrice(purchase, sale);
@@ -97,9 +95,36 @@ public class Company {
         Logger.log("Transaction was completed.");
     }
 
+    private void tryCreateBinaryTransaction() {
+        BinaryTransactionsResolver resolver = new BinaryTransactionsResolver();
+        resolver.tryResolve();
+    }
+
     private int discussPrice(Purchase purchase, Sale sale) {
         return (purchase.getOrderNumber() < sale.getOrderNumber()) ? purchase.getPriceLimit() : sale.getPriceLimit();
     }
 
-    //ToDo: definite orders
+    private class BinaryTransactionsResolver {
+        List<OrderPair<Purchase>> purchaseList;
+        List<OrderPair<Sale>> saleList;
+
+        private BinaryTransactionsResolver() {
+            purchaseList = new ArrayList<>();
+            saleList = new ArrayList<>();
+        }
+
+        public void tryResolve() {
+
+        }
+    }
+
+    private class OrderPair<T extends Order> {
+        private T order;
+        private boolean isPossible;
+
+        private OrderPair(T order, boolean isPossible) {
+            this.order = order;
+            this.isPossible = isPossible;
+        }
+    }
 }

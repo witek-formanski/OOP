@@ -13,6 +13,14 @@ public class DefinitePurchase extends Purchase implements DefiniteOrder {
     @Override
     public boolean decrement() {
         roundsLeft--;
+        if (roundsLeft < 0) {
+            throw new IllegalStateException("Rounds left count should be always non-negative.");
+        }
         return roundsLeft > 0;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + "The order will expire after " + roundsLeft + " rounds.";
     }
 }

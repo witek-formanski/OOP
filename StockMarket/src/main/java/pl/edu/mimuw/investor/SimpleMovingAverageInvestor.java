@@ -1,6 +1,7 @@
 package pl.edu.mimuw.investor;
 
 import pl.edu.mimuw.company.Company;
+import pl.edu.mimuw.iostream.Logger;
 import pl.edu.mimuw.system.TradingSystem;
 import pl.edu.mimuw.utils.SimpleMovingAverageAnalyst;
 
@@ -12,6 +13,7 @@ public class SimpleMovingAverageInvestor extends Investor {
     public SimpleMovingAverageInvestor(int money) {
         super(money);
         smaAnalyst = new SimpleMovingAverageAnalyst(5, 10);
+        Logger.log("A SimpleMovingAverageInvestor with initial money " + money + " was created.");
     }
 
     @Override
