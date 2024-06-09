@@ -9,4 +9,10 @@ public class DefiniteSale extends Sale implements DefiniteOrder {
         super(shareName, sharesCount, priceLimit, investor);
         this.roundsLeft = roundsLeft;
     }
+
+    @Override
+    public boolean decrement() {
+        roundsLeft--;
+        return roundsLeft > 0;
+    }
 }

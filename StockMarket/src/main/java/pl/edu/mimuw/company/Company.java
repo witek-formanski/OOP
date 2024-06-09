@@ -1,6 +1,9 @@
 package pl.edu.mimuw.company;
 
 import pl.edu.mimuw.iostream.Logger;
+import pl.edu.mimuw.order.BinaryOrder;
+import pl.edu.mimuw.order.DefiniteOrder;
+import pl.edu.mimuw.order.ImmediateOrder;
 import pl.edu.mimuw.order.Order;
 import pl.edu.mimuw.order.purchase.Purchase;
 import pl.edu.mimuw.order.sale.Sale;
@@ -48,11 +51,37 @@ public class Company {
             if (purchases.peek().getPriceLimit() < sales.peek().getPriceLimit()) {
                 return;
             }
-            createTransaction(purchases.peek(), sales.peek());
+            tryCreateTransaction();
         }
+        cleanupOrders();
     }
 
-    private void createTransaction(Purchase purchase, Sale sale) {
+    private void cleanupOrders() {
+        cleanupQueue(purchases);
+        cleanupQueue(sales);
+    }
+
+    private void cleanupQueue(Queue<? extends Order> orders) {
+        orders.removeIf(order -> order instanceof BinaryOrder
+                || order instanceof ImmediateOrder
+                || (order instanceof DefiniteOrder && !((DefiniteOrder) order).decrement())
+        );
+
+//        Iterator<? extends Order> iterator = orders.iterator();
+//        while (iterator.hasNext()) {
+//            Order order = iterator.next();
+//            if (order instanceof BinaryOrder || order instanceof ImmediateOrder) {
+//                iterator.remove();
+//            } else if (order instanceof DefiniteOrder && !((DefiniteOrder) order).decrement()) {
+//                iterator.remove();
+//            }
+//        }
+    }
+
+    private void tryCreateTransaction() {
+        Purchase purchase = purchases.peek();
+        Sale sale = sales.peek();
+
         int sharesCount = Math.min(purchase.getSharesCount(), sale.getSharesCount());
         int price = discussPrice(purchase, sale);
 

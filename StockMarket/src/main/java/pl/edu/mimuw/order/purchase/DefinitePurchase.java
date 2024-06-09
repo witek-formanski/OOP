@@ -9,4 +9,10 @@ public class DefinitePurchase extends Purchase implements DefiniteOrder {
         super(shareName, sharesCount, priceLimit, investor);
         this.roundsLeft = roundsLeft;
     }
+
+    @Override
+    public boolean decrement() {
+        roundsLeft--;
+        return roundsLeft > 0;
+    }
 }
