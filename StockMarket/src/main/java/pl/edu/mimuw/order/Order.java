@@ -36,6 +36,10 @@ public abstract class Order implements Comparable<Order> {
         return sharesCount;
     }
 
+    public int getTotalPriceLimit() {
+        return priceLimit * sharesCount;
+    }
+
     @Override
     public String toString() {
         return this.getClass().getName() + ": " + sharesCount + " shares of " + shareName + ", " + priceLimit + " for each. The order number is: " + orderNumber + ".";

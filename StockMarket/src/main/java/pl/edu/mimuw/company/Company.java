@@ -8,20 +8,19 @@ import pl.edu.mimuw.order.Order;
 import pl.edu.mimuw.order.purchase.Purchase;
 import pl.edu.mimuw.order.sale.Sale;
 
-import java.util.PriorityQueue;
-import java.util.Queue;
+import java.util.*;
 
 public class Company {
-    private final Queue<Purchase> purchases;
-    private final Queue<Sale> sales;
+    private final SortedSet<Purchase> purchases;
+    private final SortedSet<Sale> sales;
     private int lastPriceOfShare;
     private final String name;
 
     public Company(String name, int lastPriceOfShare) {
         this.name = name;
         this.lastPriceOfShare = lastPriceOfShare;
-        purchases = new PriorityQueue<>();
-        sales = new PriorityQueue<>();
+        purchases = new TreeSet<>();
+        sales = new TreeSet<>();
     }
 
     public int getLastPriceOfShare() {
@@ -30,7 +29,7 @@ public class Company {
 
     public void setLastPriceOfShare(int price) {
         lastPriceOfShare = price;
-    } //ToDo
+    }
 
     public void addOrder(Order order) {
         if (order instanceof Sale) {
@@ -48,21 +47,20 @@ public class Company {
 
     public void realizeTransactions() {
         while (!purchases.isEmpty() && !sales.isEmpty()) {
-            if (purchases.peek().getPriceLimit() < sales.peek().getPriceLimit()) {
-                Logger.log(""); //ToDo: logging
+            if (purchases.first().getPriceLimit() < sales.first().getPriceLimit()) {
                 return;
             }
             tryCreateTransaction();
         }
-        cleanupOrders();
+        cleanupAwaitingOrders();
     }
 
-    private void cleanupOrders() {
-        cleanupQueue(purchases);
-        cleanupQueue(sales);
+    private void cleanupAwaitingOrders() {
+        cleanupAwaitingOrders(purchases);
+        cleanupAwaitingOrders(sales);
     }
 
-    private void cleanupQueue(Queue<? extends Order> orders) {
+    private void cleanupAwaitingOrders(SortedSet<? extends Order> orders) {
         orders.removeIf(order -> order instanceof BinaryOrder
                 || order instanceof ImmediateOrder
                 || (order instanceof DefiniteOrder && !((DefiniteOrder) order).decrement())
@@ -70,7 +68,7 @@ public class Company {
     }
 
     private void tryCreateTransaction() {
-        if (purchases.peek() instanceof BinaryOrder || sales.peek() instanceof BinaryOrder) {
+        if (purchases.first() instanceof BinaryOrder || sales.first() instanceof BinaryOrder) {
             tryCreateBinaryTransaction();
         } else {
             createTransaction();
@@ -78,8 +76,8 @@ public class Company {
     }
 
     private void createTransaction() {
-        Purchase purchase = purchases.peek();
-        Sale sale = sales.peek();
+        Purchase purchase = purchases.first();
+        Sale sale = sales.first();
 
         int sharesCount = Math.min(purchase.getSharesCount(), sale.getSharesCount());
         int price = discussPrice(purchase, sale);
@@ -87,10 +85,10 @@ public class Company {
         purchase.buyShare(sharesCount, price);
         sale.sellShare(sharesCount, price);
         if (purchase.getSharesCount() == 0) {
-            purchases.poll();
+            purchases.removeFirst();
         }
         if (sale.getSharesCount() == 0) {
-            sales.poll();
+            sales.removeFirst();
         }
 
         setLastPriceOfShare(price);
@@ -98,89 +96,72 @@ public class Company {
     }
 
     private void tryCreateBinaryTransaction() {
-//        BinaryTransactionsResolver resolver = new BinaryTransactionsResolver();
-//        resolver.tryResolve();
+        if (checkIfBinaryTransactionIsPossible()) {
+            createTransaction();
+        } else {
+            cancelBinaryOrder();
+        }
+    }
+
+    private void cancelBinaryOrder() {
+        if (purchases.first() instanceof BinaryOrder && sales.first() instanceof BinaryOrder) {
+            cancelBinaryOrder(purchases.first().getOrderNumber() < sales.first().getOrderNumber() ? purchases : sales);
+        } else if (purchases.first() instanceof BinaryOrder) {
+            cancelBinaryOrder(purchases);
+        } else if (sales.first() instanceof BinaryOrder) {
+            cancelBinaryOrder(sales);
+        } else {
+            throw new IllegalStateException("Tried to cancel one of binary orders, but neither of them is binary.");
+        }
+    }
+
+    private void cancelBinaryOrder(SortedSet<? extends Order> queue) {
+        Logger.log("Could not realize binary order: " + queue.removeFirst());
+    }
+
+    private boolean checkIfBinaryTransactionIsPossible() {
+        Iterator<Purchase> purchaseIterator = purchases.iterator();
+        Iterator<Sale> saleIterator = sales.iterator();
+        Purchase firstPurchase = purchaseIterator.next();
+        Sale firstSale = saleIterator.next();
+        int balance = firstSale.getSharesCount() - firstPurchase.getSharesCount();
+
+        if (firstPurchase instanceof BinaryOrder && firstSale instanceof BinaryOrder) {
+            return checkIfBinaryTransactionIsPossible(purchaseIterator, saleIterator, balance, firstSale.getOrderNumber() < firstPurchase.getOrderNumber());
+        } else if (firstPurchase instanceof BinaryOrder) {
+            return checkIfBinaryTransactionIsPossible(purchaseIterator, saleIterator, balance, true);
+        } else if (firstSale instanceof BinaryOrder) {
+            return checkIfBinaryTransactionIsPossible(purchaseIterator, saleIterator, balance, false);
+        } else {
+            throw new IllegalStateException("Tried to resolve binary orders, but neither of them is binary.");
+        }
+    }
+
+    private boolean checkIfBinaryTransactionIsPossible(Iterator<Purchase> purchaseIterator, Iterator<Sale> saleIterator, int saleMinusPurchase, boolean saleShouldBeBiggerThanPurchase) {
+        if ((saleShouldBeBiggerThanPurchase && saleMinusPurchase >= 0) || (!saleShouldBeBiggerThanPurchase && saleMinusPurchase <= 0)) {
+            return true;
+        }
+
+        if (saleShouldBeBiggerThanPurchase) {
+            if (!purchaseIterator.hasNext()) {
+                return false;
+            }
+            Purchase purchase = purchaseIterator.next();
+            saleMinusPurchase -= purchase.getSharesCount();
+            return checkIfBinaryTransactionIsPossible(purchaseIterator, saleIterator, saleMinusPurchase,
+                    !(purchase instanceof BinaryOrder) || saleMinusPurchase < 0);
+        } else {
+            if (!saleIterator.hasNext()) {
+                return false;
+            }
+            Sale sale = saleIterator.next();
+            saleMinusPurchase += sale.getSharesCount();
+            return checkIfBinaryTransactionIsPossible(purchaseIterator, saleIterator, saleMinusPurchase,
+                    sale instanceof BinaryOrder && saleMinusPurchase < 0);
+        }
     }
 
     private int discussPrice(Purchase purchase, Sale sale) {
         return (purchase.getOrderNumber() < sale.getOrderNumber()) ? purchase.getPriceLimit() : sale.getPriceLimit();
     }
-
-//    private class BinaryTransactionsResolver {
-//        private void tryResolve() {
-//            Purchase firstPurchase = purchases.peek();
-//            Sale firstSale = sales.peek();
-//
-//            if (!(firstPurchase instanceof BinaryOrder) && !(firstSale instanceof BinaryOrder)) {
-//                throw new IllegalStateException("Tried to resolve binary orders, but neither of them is binary.");
-//            }
-//
-//            List<OrderPair<Purchase>> purchaseList;
-//            List<OrderPair<Sale>> saleList;
-//            if (firstPurchase instanceof BinaryOrder && firstSale instanceof BinaryOrder) {
-//
-//            } else if (firstPurchase instanceof BinaryOrder) {
-//                int balance = firstSale.getSharesCount() - firstPurchase.getSharesCount();
-//                if (balance >= 0) {
-//                    // to się da
-//                }
-//
-//                purchaseList = new ArrayList<>();
-//                saleList = new ArrayList<>();
-//                purchaseList.add(new OrderPair<>(firstPurchase, true));
-//                saleList.add(new OrderPair<>(firstSale, true));
-//
-//
-//                tryResolve(purchaseList, saleList, balance);
-//            } else {
-//                int balance = firstSale.getSharesCount() - firstPurchase.getSharesCount();
-//                if (balance <= 0) {
-//                    // to się da
-//                }
-//            }
-//        }
-//
-//        private boolean tryResolve(List<OrderPair<Purchase>> purchaseList, List<OrderPair<Sale>> saleList, int balance) {
-//            if (balance == 0) {
-//                return true;
-//            }
-//            if (balance > 0) { // more to sell than to buy
-//
-//            }
-//        }
-//
-//        private void createBinaryTransaction(List<OrderPair<Purchase>> purchaseList, List<OrderPair<Sale>> saleList) {
-//            while (!purchaseList.isEmpty() && !purchaseList.isEmpty()) { // both non-empty
-//                if (purchaseList.getFirst().order != purchases.peek() || saleList.getFirst().order != sales.peek()) {
-//                    throw new IllegalStateException("Invalid binary purchase or sale list.");
-//                }
-//                if (!purchaseList.getFirst().isPossible) {
-//                    purchaseList.removeFirst();
-//                    purchases.poll();
-//                    continue;
-//                }
-//                if (!saleList.getFirst().isPossible) {
-//                    saleList.removeFirst();
-//                    sales.poll();
-//                    continue;
-//                }
-//
-//            }
-//        }
-//    }
-//
-//    private class OrderPair<T extends Order> {
-//        private T order;
-//        private boolean isPossible;
-//
-//        private OrderPair(T order, boolean isPossible) {
-//            this.order = order;
-//            this.isPossible = isPossible;
-//        }
-//
-//        private OrderPair(T order) {
-//            this.order = order;
-//            isPossible = !(order instanceof BinaryOrder);
-//        }
-//    }
 }
