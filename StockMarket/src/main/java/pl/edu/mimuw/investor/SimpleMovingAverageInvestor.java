@@ -28,11 +28,11 @@ public class SimpleMovingAverageInvestor extends Investor {
         for (Company company : companies) {
             String companyName = company.getName();
             if (smaAnalyst.shouldBuy(companyName)) {
-                system.submitOrder(smaAnalyst.createPurchase(companyName, money, system.getMaximalPriceChange()));
+                system.submitOrder(smaAnalyst.createPurchase(companyName, money, system.getMaximalPriceChange(), this));
                 return;
             }
             if (smaAnalyst.shouldSell(companyName) && shares.containsKey(companyName)) {
-                system.submitOrder(smaAnalyst.createSale(companyName, shares.get(companyName), system.getMaximalPriceChange()));
+                system.submitOrder(smaAnalyst.createSale(companyName, shares.get(companyName), system.getMaximalPriceChange(), this));
                 return;
             }
         }

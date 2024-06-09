@@ -35,9 +35,14 @@ public class TradingSystem {
     }
 
     public void simulateStockMarket() {
-        for (currentRound = 1; currentRound <= roundsCount; currentRound++) {
+        for (currentRound = 0; currentRound < roundsCount; currentRound++) {
             simulateRound();
         }
+        printSummary();
+    }
+
+    private void printSummary() {
+        // ToDo
     }
 
     private void simulateRound() {

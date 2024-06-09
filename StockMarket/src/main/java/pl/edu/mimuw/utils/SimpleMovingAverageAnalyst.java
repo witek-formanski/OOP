@@ -1,5 +1,6 @@
 package pl.edu.mimuw.utils;
 
+import pl.edu.mimuw.investor.Investor;
 import pl.edu.mimuw.order.purchase.*;
 import pl.edu.mimuw.order.sale.*;
 
@@ -86,7 +87,7 @@ public class SimpleMovingAverageAnalyst {
         return getCompanyData(companyName).shouldSell;
     }
 
-    public Purchase createPurchase(String companyName, int money, int maximalPriceChange) {
+    public Purchase createPurchase(String companyName, int money, int maximalPriceChange, Investor investor) {
         if (!shouldBuy(companyName)) {
             throw new IllegalStateException("Cannot create a purchase for shares that shouldn't been bought.");
         }
@@ -98,19 +99,19 @@ public class SimpleMovingAverageAnalyst {
 
         Purchase purchase;
         if (coefficient < 0.25) {
-            purchase = new BinaryPurchase(companyName, sharesCount, pricePerShare);
+            purchase = new BinaryPurchase(companyName, sharesCount, pricePerShare, investor);
         } else if (coefficient < 0.5) {
-            purchase = new ImmediatePurchase(companyName, sharesCount, pricePerShare);
+            purchase = new ImmediatePurchase(companyName, sharesCount, pricePerShare, investor);
         } else if (coefficient < 0.75) {
-            purchase = new DefinitePurchase(companyName, sharesCount, pricePerShare, (int) (6 * coefficient));
+            purchase = new DefinitePurchase(companyName, sharesCount, pricePerShare, investor, (int) (6 * coefficient));
         } else {
-            purchase = new IndefinitePurchase(companyName, sharesCount, pricePerShare);
+            purchase = new IndefinitePurchase(companyName, sharesCount, pricePerShare, investor);
         }
 
         return purchase;
     }
 
-    public Sale createSale(String companyName, int availableSharesCount, int maximalPriceChange) {
+    public Sale createSale(String companyName, int availableSharesCount, int maximalPriceChange, Investor investor) {
         if (!shouldSell(companyName)) {
             throw new IllegalStateException("Cannot create a sale for shares that shouldn't been sold.");
         }
@@ -122,13 +123,13 @@ public class SimpleMovingAverageAnalyst {
 
         Sale sale;
         if (coefficient < 0.25) {
-            sale = new BinarySale(companyName, sharesCount, pricePerShare);
+            sale = new BinarySale(companyName, sharesCount, pricePerShare, investor);
         } else if (coefficient < 0.5) {
-            sale = new ImmediateSale(companyName, sharesCount, pricePerShare);
+            sale = new ImmediateSale(companyName, sharesCount, pricePerShare, investor);
         } else if (coefficient < 0.75) {
-            sale = new DefiniteSale(companyName, sharesCount, pricePerShare, (int) (6 * coefficient));
+            sale = new DefiniteSale(companyName, sharesCount, pricePerShare, investor, (int) (6 * coefficient));
         } else {
-            sale = new IndefiniteSale(companyName, sharesCount, pricePerShare);
+            sale = new IndefiniteSale(companyName, sharesCount, pricePerShare, investor);
         }
 
         return sale;

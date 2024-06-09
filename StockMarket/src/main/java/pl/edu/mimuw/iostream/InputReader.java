@@ -77,7 +77,7 @@ public class InputReader {
                             throw new IllegalArgumentException("The share of name " + name + " was not found in shares list.");
                         }
                         for (Investor investor : Investors) {
-                            investor.addShare(name, quantity);
+                            investor.updateShares(name, quantity);
                         }
                     }
                 }

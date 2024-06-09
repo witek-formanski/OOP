@@ -14,8 +14,12 @@ public abstract class Investor {
         shares = new HashMap<>();
     }
 
-    public void addShare(String shareName, int quantity) {
-        shares.put(shareName, quantity);
+    public void updateShares(String shareName, int quantity) {
+        int finalQuantity = shares.getOrDefault(shareName, 0) + quantity;
+        if (finalQuantity < 0) {
+            throw new IllegalStateException("Shares quantity cannot be negative.");
+        }
+        shares.put(shareName, finalQuantity);
     }
 
     public abstract void playRound(TradingSystem system);
@@ -31,5 +35,15 @@ public abstract class Investor {
             throw new ArrayIndexOutOfBoundsException("Tried to access company at index " + index + ", but the companies count is " + shares.size() + ".");
         }
         return shares.keySet().stream().toList().get(index);
+    }
+
+    public void buyShare(String shareName, int sharesCount, int price) {
+        updateMoney(-price * sharesCount);
+        updateShares(shareName, sharesCount);
+    }
+
+    public void sellShare(String shareName, int sharesCount, int price) {
+        updateMoney(price * sharesCount);
+        updateShares(shareName, -sharesCount);
     }
 }
