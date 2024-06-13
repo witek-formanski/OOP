@@ -4,7 +4,6 @@ import pl.edu.mimuw.company.Company;
 import pl.edu.mimuw.investor.Investor;
 import pl.edu.mimuw.investor.RandomInvestor;
 import pl.edu.mimuw.investor.SimpleMovingAverageInvestor;
-import pl.edu.mimuw.system.TradingSystem;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -15,8 +14,11 @@ import java.util.List;
 import java.util.Map;
 
 public class InputReader {
-    public static List<Investor> readFromFile(String fileName, TradingSystem system) {
-        List<Investor> Investors = new ArrayList<>();
+    private Map<String, Company> companies;
+    private List<Investor> investors;
+
+    public void readFromFile(String fileName) {
+        List<Investor> investors = new ArrayList<>();
         Map<String, Company> companies = new HashMap<>();
         int randomInvestorsCount = 0;
         int simpleMovingAverageInvestorsCount = 0;
@@ -54,7 +56,7 @@ public class InputReader {
                         int price = Integer.parseInt(parts[1]);
                         companies.put(name, new Company(name, price));
                     }
-                    system.setCompanies(companies);
+                    this.companies = companies;
                 }
 
                 // Third line - Initial cash and shares for each investor
@@ -63,10 +65,10 @@ public class InputReader {
                     money = Integer.parseInt(tokens[0]);
 
                     for (int i = 0; i < randomInvestorsCount; i++) {
-                        Investors.add(new RandomInvestor(money));
+                        investors.add(new RandomInvestor(money));
                     }
                     for (int i = 0; i < simpleMovingAverageInvestorsCount; i++) {
-                        Investors.add(new SimpleMovingAverageInvestor(money));
+                        investors.add(new SimpleMovingAverageInvestor(money));
                     }
 
                     for (int i = 1; i < tokens.length; i++) {
@@ -76,7 +78,7 @@ public class InputReader {
                         if (companies.get(name) == null) {
                             throw new IllegalArgumentException("The share of name " + name + " was not found in shares list.");
                         }
-                        for (Investor investor : Investors) {
+                        for (Investor investor : investors) {
                             investor.updateShares(name, quantity);
                         }
                     }
@@ -86,6 +88,14 @@ public class InputReader {
             throw new IllegalArgumentException("Invalid input data provided.");
         }
 
-        return Investors;
+        this.investors = investors;
+    }
+
+    public List<Investor> getInvestors() {
+        return investors;
+    }
+
+    public Map<String, Company> getCompanies() {
+        return companies;
     }
 }

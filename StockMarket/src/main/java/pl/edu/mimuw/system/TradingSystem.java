@@ -2,9 +2,9 @@ package pl.edu.mimuw.system;
 
 import pl.edu.mimuw.company.Company;
 import pl.edu.mimuw.investor.Investor;
+import pl.edu.mimuw.iostream.InputReader;
 import pl.edu.mimuw.iostream.Logger;
 import pl.edu.mimuw.order.Order;
-import pl.edu.mimuw.iostream.InputReader;
 
 import java.util.List;
 import java.util.Map;
@@ -18,9 +18,11 @@ public class TradingSystem {
     private final List<Investor> investors;
     private final int maximalPriceChange = 10;
 
-    public TradingSystem(String fileName, int roundsCount) {
+    public TradingSystem(InputReader inputReader, String fileName, int roundsCount) {
         this.roundsCount = roundsCount;
-        investors = readInput(fileName);
+        inputReader.readFromFile(fileName);
+        investors = inputReader.getInvestors();
+        companies = inputReader.getCompanies();
     }
 
     public int getMaximalPriceChange() {
@@ -46,8 +48,10 @@ public class TradingSystem {
     }
 
     private void printSummary() {
-        // ToDo
         Logger.log("Summary:");
+        for (Investor investor : investors) {
+            investor.printSummary();
+        }
     }
 
     private void simulateRound() {
@@ -69,10 +73,6 @@ public class TradingSystem {
         for (Company company : getAvailableCompaniesList()) {
             company.realizeTransactions();
         }
-    }
-
-    private List<Investor> readInput(String fileName) {
-        return InputReader.readFromFile(fileName, this);
     }
 
     public void submitOrder(Order order) {
@@ -105,5 +105,9 @@ public class TradingSystem {
             throw new ArrayIndexOutOfBoundsException("Tried to access company at index " + index + ", but the companies count is " + getCompaniesCount() + ".");
         }
         return companies.get(getAvailableCompaniesNamesList().get(index));
+    }
+
+    public int getLastPriceOf(String companyName) {
+        return getCompany(companyName).getLastPriceOfShare();
     }
 }

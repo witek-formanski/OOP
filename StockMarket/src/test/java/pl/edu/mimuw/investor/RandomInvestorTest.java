@@ -3,7 +3,6 @@ package pl.edu.mimuw.investor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
-//import org.mockito.Mockito;
 import pl.edu.mimuw.company.Company;
 import pl.edu.mimuw.iostream.Logger;
 import pl.edu.mimuw.order.sale.BinarySale;
@@ -37,7 +36,7 @@ public class RandomInvestorTest {
     public void testInitialMoneyLogged() {
         try (MockedStatic<Logger> mockedLogger = mockStatic(Logger.class)) {
             new RandomInvestor(1000);
-            mockedLogger.verify(() -> Logger.log("A RandomInvestor with initial money 1000 was created."));
+            mockedLogger.verify(() -> Logger.log("A RND investor with initial money 1000 was created."));
         }
     }
 

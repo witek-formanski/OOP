@@ -30,6 +30,7 @@ public class Company {
 
     public void setLastPriceOfShare(int price) {
         lastPriceOfShare = price;
+        Logger.log("Last price of " + getName() + " is: " + price + ".");
     }
 
     public void addOrder(Order order) {
@@ -38,7 +39,7 @@ public class Company {
         } else if (order instanceof Purchase) {
             purchases.add((Purchase) order);
         } else {
-            throw new IllegalArgumentException("The order type " + order.getClass().getName() + " is not supported.");
+            throw new IllegalArgumentException("The order type " + order.getClass().getSimpleName() + " is not supported.");
         }
     }
 
@@ -98,9 +99,11 @@ public class Company {
         purchase.buyShare(sharesCount, price);
         sale.sellShare(sharesCount, price);
         if (purchase.getSharesCount() == 0) {
+            Logger.log("Purchase was finalized: " + purchase);
             purchases.removeFirst();
         }
         if (sale.getSharesCount() == 0) {
+            Logger.log("Sale was finalized: " + sale);
             sales.removeFirst();
         }
 

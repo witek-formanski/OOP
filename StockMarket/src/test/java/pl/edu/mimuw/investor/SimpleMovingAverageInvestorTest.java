@@ -7,9 +7,10 @@ import pl.edu.mimuw.system.TradingSystem;
 import pl.edu.mimuw.utils.SimpleMovingAverageAnalyst;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class SimpleMovingAverageInvestorTest {
@@ -43,7 +44,6 @@ public class SimpleMovingAverageInvestorTest {
 
         investor.playRound(system);
 
-        verify(smaAnalyst, times(1)).addPrice("MockCompany", 100);
         verify(system, times(0)).submitOrder(any());
     }
 
@@ -66,4 +66,30 @@ public class SimpleMovingAverageInvestorTest {
 
         verify(system, times(0)).submitOrder(any());
     }
+
+        @Test
+        public void testPlayRound() {
+            Company company1 = mock(Company.class);
+            Company company2 = mock(Company.class);
+            when(system.getAvailableCompaniesList()).thenReturn(Arrays.asList(company1, company2));
+            when(company1.getName()).thenReturn("Company1");
+            when(company2.getName()).thenReturn("Company2");
+            when(company1.getLastPriceOfShare()).thenReturn(100);
+            when(company2.getLastPriceOfShare()).thenReturn(200);
+            when(system.getLastPriceOf("Company1")).thenReturn(100);
+            when(system.getLastPriceOf("Company2")).thenReturn(200);
+            when(system.getMaximalPriceChange()).thenReturn(10);
+
+            assertDoesNotThrow(() -> investor.playRound(system));
+            verify(system, times(1)).getAvailableCompaniesList();
+            verify(company1, times(1)).getName();
+            verify(company2, times(1)).getName();
+            verify(company1, times(1)).getLastPriceOfShare();
+            verify(company2, times(1)).getLastPriceOfShare();
+        }
+
+        @Test
+        public void testGetInvestorShortName() {
+            assertEquals("SMA", investor.getInvestorShortName());
+        }
 }

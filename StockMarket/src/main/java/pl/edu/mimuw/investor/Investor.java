@@ -9,12 +9,11 @@ import java.util.Map;
 public abstract class Investor {
     protected Map<String, Integer> shares;
     protected int money;
-//    protected int availableMoney;
 
     public Investor(int money) {
         this.money = money;
-//        availableMoney = money;
         shares = new HashMap<>();
+        Logger.log("A " + getInvestorShortName() + " investor with initial money " + money + " was created.");
     }
 
     public void updateShares(String shareName, int quantity) {
@@ -23,33 +22,27 @@ public abstract class Investor {
             throw new IllegalStateException("Shares quantity cannot be negative.");
         }
         if (quantity > 0) {
-            Logger.log("An investor obtained " + quantity + " new shares of " + shareName + ".");
+            Logger.log("A " + getInvestorShortName() + " investor obtained " + quantity + " new shares of " + shareName + ".");
         } else {
-            Logger.log("An investor disposed of " + (-quantity) + " shares of " + shareName + ".");
+            Logger.log("A " + getInvestorShortName() + " investor disposed of " + (-quantity) + " shares of " + shareName + ".");
         }
 
         shares.put(shareName, finalQuantity);
     }
 
     public abstract void playRound(TradingSystem system);
+
     public void updateMoney(int change) {
         if (money + change < 0) {
             throw new IllegalStateException("Money cannot be negative.");
         }
         if (change > 0) {
-            Logger.log("A transfer of " + change + " was transferred to the investor's account.");
+            Logger.log("A transfer of " + change + " was transferred to the " + getInvestorShortName() + " investor's account.");
         } else {
-            Logger.log("A transfer of " + (-change) + " was send from the investor's account.");
+            Logger.log("A transfer of " + (-change) + " was send from the " + getInvestorShortName() + " investor's account.");
         }
         money += change;
     }
-
-//    public void blockMoney(int funds) {
-//        if (availableMoney - funds < 0) {
-//            throw new IllegalStateException("Cannot block more money than available.");
-//        }
-//        availableMoney -= funds;
-//    }
 
     public String getShareOfIndex(int index) {
         if (index >= shares.size()) {
@@ -76,5 +69,21 @@ public abstract class Investor {
 
     public boolean hasShares(String shareName, int sharesCount) {
         return shares.containsKey(shareName) && shares.get(shareName) >= sharesCount;
+    }
+
+    public void printSummary() {
+        Logger.log(getInvestorShortName() + ": ");
+        Logger.log("Funds: " + money);
+        Logger.log("Shares: " + getSharesSummary());
+    }
+
+    public abstract String getInvestorShortName();
+
+    public String getSharesSummary() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Map.Entry<String, Integer> share : shares.entrySet()) {
+            stringBuilder.append(share.getKey()).append(":").append(share.getValue()).append(" ");
+        }
+        return stringBuilder.toString();
     }
 }

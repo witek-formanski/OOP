@@ -64,11 +64,11 @@ public class SimpleMovingAverageAnalyst {
 
         if (previousLow >= previousHigh && companyData.lowAverage < companyData.highAverage) {
             companyData.shouldSell = true;
-            companyData.decisionCoefficient = 1 - companyData.lowAverage / companyData.highAverage;
+            companyData.decisionCoefficient = companyData.highAverage - companyData.lowAverage;
             companyData.normalizeDecisionCoefficient();
         } else if (previousLow <= previousHigh && companyData.lowAverage > companyData.highAverage) {
             companyData.shouldBuy = true;
-            companyData.decisionCoefficient = companyData.lowAverage / companyData.highAverage - 1;
+            companyData.decisionCoefficient = companyData.lowAverage - companyData.highAverage;
             companyData.normalizeDecisionCoefficient();
         }
     }
@@ -96,13 +96,13 @@ public class SimpleMovingAverageAnalyst {
         CompanyData companyData = getCompanyData(companyName);
         double coefficient = companyData.decisionCoefficient;
         int pricePerShare = companyData.prices.getLast() + (int) ((coefficient - 0.5) * maximalPriceChange);
-        int sharesCount = Math.min(money / pricePerShare, (int) (10 * coefficient));
+        int sharesCount = Math.min(money / pricePerShare, 1 + (int) (10 * coefficient));
 
         Purchase purchase;
         if (coefficient < 0.25) {
-            purchase = new BinaryPurchase(companyName, sharesCount, pricePerShare, investor);
-        } else if (coefficient < 0.5) {
             purchase = new ImmediatePurchase(companyName, sharesCount, pricePerShare, investor);
+        } else if (coefficient < 0.5) {
+            purchase = new BinaryPurchase(companyName, sharesCount, pricePerShare, investor);
         } else if (coefficient < 0.75) {
             purchase = new DefinitePurchase(companyName, sharesCount, pricePerShare, investor, (int) (6 * coefficient));
         } else {
@@ -121,19 +121,20 @@ public class SimpleMovingAverageAnalyst {
         CompanyData companyData = getCompanyData(companyName);
         double coefficient = companyData.decisionCoefficient;
         int pricePerShare = companyData.prices.getLast() - (int) ((coefficient - 0.5) * maximalPriceChange);
-        int sharesCount = Math.min(availableSharesCount, (int) (10 * coefficient));
+        int sharesCount = Math.min(availableSharesCount, 1 + (int) (10 * coefficient));
 
         Sale sale;
         if (coefficient < 0.25) {
-            sale = new BinarySale(companyName, sharesCount, pricePerShare, investor);
-        } else if (coefficient < 0.5) {
             sale = new ImmediateSale(companyName, sharesCount, pricePerShare, investor);
+        } else if (coefficient < 0.5) {
+            sale = new BinarySale(companyName, sharesCount, pricePerShare, investor);
         } else if (coefficient < 0.75) {
             sale = new DefiniteSale(companyName, sharesCount, pricePerShare, investor, (int) (6 * coefficient));
         } else {
             sale = new IndefiniteSale(companyName, sharesCount, pricePerShare, investor);
         }
 
+        Logger.log("A SimpleMovingAverageAnalyst decided to create " + sale);
         return sale;
     }
 
