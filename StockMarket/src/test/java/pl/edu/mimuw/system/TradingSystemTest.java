@@ -1,9 +1,10 @@
+package pl.edu.mimuw.system;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import pl.edu.mimuw.company.Company;
 import pl.edu.mimuw.investor.Investor;
 import pl.edu.mimuw.iostream.InputReader;
-import pl.edu.mimuw.system.TradingSystem;
 
 import java.util.ArrayList;
 import java.util.HashMap;
