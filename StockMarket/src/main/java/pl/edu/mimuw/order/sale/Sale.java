@@ -23,4 +23,9 @@ public abstract class Sale extends Order {
         }
         this.sharesCount -= sharesCount;
     }
+
+    @Override
+    public boolean isPossible(int count) {
+        return investor.hasShares(shareName, count);
+    }
 }

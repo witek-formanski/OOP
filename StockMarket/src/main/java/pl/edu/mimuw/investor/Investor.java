@@ -9,9 +9,11 @@ import java.util.Map;
 public abstract class Investor {
     protected Map<String, Integer> shares;
     protected int money;
+//    protected int availableMoney;
 
     public Investor(int money) {
         this.money = money;
+//        availableMoney = money;
         shares = new HashMap<>();
     }
 
@@ -42,6 +44,13 @@ public abstract class Investor {
         money += change;
     }
 
+//    public void blockMoney(int funds) {
+//        if (availableMoney - funds < 0) {
+//            throw new IllegalStateException("Cannot block more money than available.");
+//        }
+//        availableMoney -= funds;
+//    }
+
     public String getShareOfIndex(int index) {
         if (index >= shares.size()) {
             throw new ArrayIndexOutOfBoundsException("Tried to access company at index " + index + ", but the companies count is " + shares.size() + ".");
@@ -59,5 +68,13 @@ public abstract class Investor {
         updateMoney(price * sharesCount);
         updateShares(shareName, -sharesCount);
         Logger.log("An investor sold " + sharesCount + " shares of " + shareName + " for " + price + " each.");
+    }
+
+    public boolean hasFunds(int money) {
+        return this.money >= money;
+    }
+
+    public boolean hasShares(String shareName, int sharesCount) {
+        return shares.containsKey(shareName) && shares.get(shareName) >= sharesCount;
     }
 }

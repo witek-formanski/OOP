@@ -11,7 +11,7 @@ public class DefinitePurchase extends Purchase implements DefiniteOrder {
     }
 
     @Override
-    public boolean decrement() {
+    public boolean isValid() {
         roundsLeft--;
         if (roundsLeft < 0) {
             throw new IllegalStateException("Rounds left count should be always non-negative.");

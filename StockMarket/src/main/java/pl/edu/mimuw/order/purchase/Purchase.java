@@ -23,4 +23,9 @@ public abstract class Purchase extends Order {
         }
         this.sharesCount -= sharesCount;
     }
+
+    @Override
+    public boolean isPossible(int money) {
+        return investor.hasFunds(money);
+    }
 }

@@ -115,7 +115,7 @@ public class Simulation {
             totalWaitingPassengers += waitingPassengersCount[i];
             Logger.newLine();
         }
-        Time averageWaitingTime = new Time(totalWaitingTime / totalWaitingPassengers);
+        Time averageWaitingTime = new Time((totalWaitingPassengers > 0) ? totalWaitingTime / totalWaitingPassengers : 0);
         Logger.log("SUMMARY");
         Logger.log("Total rides count: " + totalRidesCount + ".");
         Logger.log("Average waiting time (hours:minutes): " + averageWaitingTime.toStringInHours() + ".");

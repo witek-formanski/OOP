@@ -44,4 +44,10 @@ public abstract class Order implements Comparable<Order> {
     public String toString() {
         return this.getClass().getSimpleName() + ": " + sharesCount + " shares of " + shareName + ", " + priceLimit + " for each. The order number is: " + orderNumber + ".";
     }
+
+    public abstract boolean isPossible(int quantity);
+
+    public Investor getInvestor() {
+        return investor;
+    }
 }
