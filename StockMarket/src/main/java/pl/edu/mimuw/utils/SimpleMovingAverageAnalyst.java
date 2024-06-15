@@ -138,7 +138,7 @@ public class SimpleMovingAverageAnalyst {
         return sale;
     }
 
-    private class CompanyData {
+    private static class CompanyData {
         private final List<Integer> prices;
         private double lowAverage;
         private double highAverage;

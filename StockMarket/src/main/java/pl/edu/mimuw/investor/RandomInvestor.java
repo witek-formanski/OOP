@@ -43,7 +43,6 @@ public class RandomInvestor extends Investor {
 
         int range = RandomNumberGenerator.getRandom(0, system.getMaximalPriceChange());
         int pricePerShare = company.getLastPriceOfShare() + RandomNumberGenerator.getRandom(-range, range);
-        ;
         int sharesCount = RandomNumberGenerator.getRandom(0, money / pricePerShare);
         if (sharesCount == 0) {
             Logger.log("A " + getInvestorShortName() + " investor will not make a purchase this round.");
